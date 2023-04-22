@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>Postprocess DRC script to merge/flatten mask</description>
+ <version>0.9</version>
+ <category>drc</category>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <shortcut/>
+ <show-in-menu>false</show-in-menu>
+ <group-name>drc_scripts</group-name>
+ <menu-path>tools_menu.drc.end</menu-path>
+ <interpreter>dsl</interpreter>
+ <dsl-interpreter-name>drc-dsl-xml</dsl-interpreter-name>
+ <text>
+##########################################################################################
+#
+#  Postprocess DRC for PDK_Fab6 finalization
+#   To be used with batch only: klayout -b -r Fab6_postprocess_merge.lydrc -rd input=mask.gds
+# 
+##########################################################################################
+
+# Check input
+if not $input
+  error("No input specified")
+end
+
+# log_file('drc.log')
+
+# engine setup
+flat
+threads(8)
+verbose(true)
+
+
+## Set target and load
+target(File.dirname($input) + "/" + File.basename($input, ".*") + "_merged.oas")
+source(File.dirname($input) + "/" + File.basename($input, ".*") + ".oas")
+
+# Output flattened and merged layers
+layers.map { |l| l.layer }.sort.each { |l| input(l).flatten.size(1e-3.um).merge.size(-1e-3).smoothed(5e-3.um, true).output(l) unless input(l).count == 0 }
+layers.map { |l| l.layer }.sort.each { |l| input(l, 1).flatten.size(1e-3.um).merge.size(-1e-3).smoothed(5e-3.um, true).output(l, 1) unless input(l, 1).count == 0 }
+
+log("Write target")
+target(RBA::Layout::new)
+log("Done")
+
+
+</text>
+</klayout-macro>

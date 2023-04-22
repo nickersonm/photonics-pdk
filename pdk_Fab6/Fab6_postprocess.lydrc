@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>Postprocess DRC script to finalize mask generated with PDK_Fab6</description>
+ <version>0.9</version>
+ <category>drc</category>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <shortcut/>
+ <show-in-menu>false</show-in-menu>
+ <group-name>drc_scripts</group-name>
+ <menu-path>tools_menu.drc.end</menu-path>
+ <interpreter>dsl</interpreter>
+ <dsl-interpreter-name>drc-dsl-xml</dsl-interpreter-name>
+ <text>
+##########################################################################################
+#
+#  Postprocess DRC for PDK_Fab6 finalization
+#   To be used with batch only: klayout -b -r Fab6_postprocess.lydrc -rd input=mask.gds
+# 
+##########################################################################################
+
+# Check input
+if not $input
+  error("No input specified")
+end
+
+# log_file('drc.log')
+
+# engine setup
+deep
+threads(8)
+verbose(true)
+
+
+## Preprocessing operations
+source($input)
+
+l_out = layers.map { |l| l.layer }.sort
+
+# Perform inversion operations on input: layer = layer - [10k+layer] + ([10k+layer] - layer)
+l_out.select {|l| (l >= 10e3) }.each do |l|
+  log("processing layer #{l} inversion")
+  l0 = Integer(l - 10e3)
+  L  = input(l)
+  L0 = input(l0)
+  (L0 - L + (L - L0)).output(l0)
+  polygons.output(l) # Clear the layer
+  L.forget
+  L0.forget
+end
+
+
+## Postprocessing operations
+# Layer definitions
+L_ProtectRidge      = 1
+L_ProtectRidge_inv  = 101
+L_ProtectRegrowth   = 15
+L_ProtectRegrowth_inv=115
+L_EtchRib           = 2
+L_EtchRib_inv       = 102
+L_EtchIso           = 3
+L_EtchIso_inv       = 103
+L_MetalVia          = 4
+L_MetalTop          = 5
+L_MetalTop_inv      = 105
+L_CleaveLane        = 10
+L_CleaveKeepaway    = 12
+L_MetalKeepaway     = 13
+L_DieArea           = 1001
+L_DieReserved       = 1005
+L_Exclude           = 998
+L_DRC               = 999
+
+# Cleave lanes
+input(L_CleaveLane).not(input(L_CleaveKeepaway)).output(L_CleaveLane)
+
+# Top metal
+metalTop = input(L_MetalTop) - (input(L_MetalKeepaway) - input(L_CleaveKeepaway))
+metalTop.output(L_MetalTop)
+
+# Remove temporary layers
+# l_out -= [L_MetalTop, L_MetalKeepaway, L_CleaveKeepaway, L_CleaveLane]
+polygons.output(L_MetalKeepaway)
+polygons.output(L_CleaveKeepaway)
+
+
+## Geometry fill of ProtectRidge in empty/unused areas (no CleaveKeepaway or MetalKeepaway)
+#   https://www.klayout.de/doc-qt4/about/drc_ref_layer.html#k_35
+#   https://www.klayout.de/forum/discussion/2162/automating-the-untilities-fill-tool-in-ruby
+# Works best in 'flat' mode
+fillsize = 30.um  # Square edge length for fill region
+fillbuffer = 40.um # Don't fill within this much of any real layers
+fillfrac = 0.5    # Fraction to fill by area
+fillRidge = fill_pattern("FillRidge").shape(L_ProtectRidge, box(fillsize*(fillfrac**0.5))).origin(-fillsize/2, -fillsize/2)
+fillMetal = fill_pattern("FillMetal").shape(L_MetalTop, box(fillsize*(fillfrac**0.5)-4)).origin(-fillsize/2, -fillsize/2)
+
+# Assemble layer numbers to exclude, except for DieArea and DieReserved
+l_exclude = (layers.map { |l| l.layer }.sort.uniq).select {|l| !input(l).is_empty?} - [L_DieArea, L_DieReserved]
+# log("Exclude: " + l_exclude.to_s)
+
+# Exclude known process testing marks
+excludeRegion = (extent("markResolution")+extent("LayerLabels*")+extent("markVernier")+extent("markDEKTAK")+extent("markTLM*")+extent("text_*")+extent("ResolutionBlockSet*")+extent("Vernier*")).merge
+
+# Assemble fill area by removing excluded regions and perform fill
+fillArea = input(L_DieArea).size(fillbuffer) - excludeRegion.sized(fillbuffer)
+l_exclude.each { |l| fillArea -= (input(l) - excludeRegion).sized(fillbuffer) }
+fillArea.merge.output(L_Exclude)
+fillArea.fill(fillRidge, hstep(fillsize), vstep(fillsize), auto_origin)
+fillArea.fill(fillMetal, hstep(fillsize), vstep(fillsize), auto_origin)
+excludeRegion.forget
+
+
+## Inversions; needs 'flat' mode
+flat
+dieMax = input(L_DieReserved)
+[L_MetalTop, L_ProtectRidge, L_ProtectRegrowth].each { |l| (dieMax - input(l)).output(l+100) }
+
+
+## Full-isolation etch experimental layer
+# Exclude known process testing marks
+excludeRegion = (extent("markResolution")+extent("LayerLabels*")+extent("markVernier")+extent("markDEKTAK")+extent("markTLM*")+extent("ResolutionBlockSet*")+extent("Vernier*"))
+excludeRegion = excludeRegion.size(5.um).merge
+
+# Assemble isolation area by removing extended via regions
+isoArea = input(L_DieReserved) - excludeRegion
+isoArea -= (input(L_MetalVia) - excludeRegion).sized(10.um, acute_limit)
+isoArea -= (input(L_EtchRib) - excludeRegion).sized(5.um, octagon_limit)
+isoArea += input(L_EtchIso)
+isoArea.merge.output(L_EtchIso, 1)
+excludeRegion.forget
+
+
+## DRC checks; leave in 'flat' mode
+# Reset DRC layer
+log("DRC checks")
+drcL = polygon_layer
+drcL.output(L_DRC, 1)
+
+# Definitions
+minsize = 0.5.um # Minimum size to check; merges polygons closer than this, ignores DRC errors smaller than this
+modSep = 20.um
+metalSep = 15.um
+
+# Exclude known process testing marks
+excludeRegion = (extent("markResolution")+extent("LayerLabels*")+extent("markVernier")+extent("markDEKTAK")+extent("markTLM*")+extent("text_*")+extent("ResolutionBlockSet*")+extent("Vernier*")).merge
+
+# Modulator checks from metal via
+drcModulator = (input(L_MetalVia) - excludeRegion).size(0.75.um).size(minsize-0.75.um).size(-minsize)
+drcL += drcModulator.isolated(modSep).polygons.merge
+
+# Metal check
+drcMetal = (metalTop - excludeRegion).size(0.75.um).size(minsize-0.75.um).size(-minsize)
+drcL += drcMetal.isolated(metalSep).polygons.merge
+
+drcL.size(-minsize).size(minsize).output(L_DRC, 1)
+
+
+# Save
+source.layout.write(File.dirname($input) + "/" + File.basename($input, ".*") + ".oas")
+
+# Remove original GDS
+File.delete($input)
+
+</text>
+</klayout-macro>

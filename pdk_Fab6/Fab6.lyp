@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Selected with https://medialab.github.io/iwanthue/ -->
+<layer-properties>
+ <properties>
+  <name>1/0 ProtectRidge</name>
+  <source>1/0@1</source>
+  <fill-color>#834900</fill-color>
+  <frame-color>#834900</frame-color>
+  <width>2</width>
+ </properties>
+ <properties>
+  <name>101/0 ProtectRidge (inverse)</name>
+  <source>101/0@1</source>
+  <dither-pattern>I1</dither-pattern>
+  <fill-color>#834900</fill-color>
+  <frame-color>#834900</frame-color>
+  <width>2</width>
+  <visible>false</visible>
+ </properties>
+ <properties>
+  <name>15/0 ProtectRegrowth</name>
+  <source>15/0@1</source>
+  <fill-color>#c3de47</fill-color>
+  <frame-color>#c3de47</frame-color>
+  <width>2</width>
+ </properties>
+ <properties>
+  <name>115/0 ProtectRegrowth (inverse)</name>
+  <source>115/0@1</source>
+  <dither-pattern>I1</dither-pattern>
+  <fill-color>#c3de47</fill-color>
+  <frame-color>#c3de47</frame-color>
+  <width>2</width>
+  <visible>false</visible>
+ </properties>
+ <properties>
+  <name>2/0 EtchRib</name>
+  <source>2/0@1</source>
+  <fill-color>#6fd2a9</fill-color>
+  <frame-color>#6fd2a9</frame-color>
+  <width>2</width>
+ </properties>
+ <!-- <properties>
+  <name>102/0 EtchRib (inverse)</name>
+  <source>102/0@1</source>
+  <dither-pattern>I1</dither-pattern>
+  <fill-color>#6fd2a9</fill-color>
+  <frame-color>#6fd2a9</frame-color>
+  <width>2</width>
+  <visible>false</visible>
+ </properties> -->
+ <properties>
+  <name>3/0 EtchIso</name>
+  <source>3/0@1</source>
+  <fill-color>#bd5353</fill-color>
+  <frame-color>#bd5353</frame-color>
+  <width>2</width>
+ </properties>
+ <properties>
+  <name>3/1 EtchIso (alt)</name>
+  <source>3/1@1</source>
+  <dither-pattern>I9</dither-pattern>
+  <fill-color>#bd5353</fill-color>
+  <frame-color>#bd5353</frame-color>
+  <width>2</width>
+  <visible>false</visible>
+ </properties>
+ <!-- <properties>
+  <name>103/0 EtchIso (inverse)</name>
+  <source>103/0@1</source>
+  <dither-pattern>I1</dither-pattern>
+  <fill-color>#bd5353</fill-color>
+  <frame-color>#bd5353</frame-color>
+  <width>2</width>
+  <visible>false</visible>
+ </properties> -->
+ <properties>
+  <name>4/0 MetalVia</name>
+  <source>4/0@1</source>
+  <fill-color>#dc5932</fill-color>
+  <frame-color>#dc5932</frame-color>
+  <width>2</width>
+ </properties>
+ <properties>
+  <name>5/0 MetalTop</name>
+  <source>5/0@1</source>
+  <fill-color>#599fd7</fill-color>
+  <frame-color>#599fd7</frame-color>
+  <width>2</width>
+ </properties>
+ <properties>
+  <name>105/0 MetalTop (inverse)</name>
+  <source>105/0@1</source>
+  <dither-pattern>I1</dither-pattern>
+  <fill-color>#599fd7</fill-color>
+  <frame-color>#599fd7</frame-color>
+  <width>2</width>
+  <visible>false</visible>
+ </properties>
+ <properties>
+  <name>10/0 CleaveLane</name>
+  <source>10/0@1</source>
+  <fill-color>#6f50be</fill-color>
+  <frame-color>#6f50be</frame-color>
+ </properties>
+ <properties>
+  <name>12/0 CleaveKeepaway</name>
+  <source>12/0@1</source>
+  <dither-pattern>I1</dither-pattern>
+  <fill-color>#6f50be</fill-color>
+  <frame-color>#6f50be</frame-color>
+ </properties>
+ <properties>
+  <name>13/0 MetalKeepaway</name>
+  <source>13/0@1</source>
+  <dither-pattern>I1</dither-pattern>
+  <fill-color>#599fd7</fill-color>
+  <frame-color>#599fd7</frame-color>
+ </properties>
+ <properties>
+  <name>1001/0 Die Area</name>
+  <source>1001/0@1</source>
+  <fill-color>#d3bd55</fill-color>
+  <frame-color>#d3bd55</frame-color>
+  <visible>false</visible>
+ </properties>
+ <properties>
+  <name>1005/0 Die Reserved</name>
+  <source>1005/0@1</source>
+  <fill-color>#6cd35a</fill-color>
+  <frame-color>#6cd35a</frame-color>
+  <visible>false</visible>
+ </properties>
+ <properties>
+  <name>1111/0 Annotation</name>
+  <source>1111/0@1</source>
+  <fill-color>#577f37</fill-color>
+  <frame-color>#577f37</frame-color>
+  <width>2</width>
+ </properties>
+ <properties>
+  <name>998/0 Fill Area</name>
+  <source>998/0@1</source>
+  <frame-color>#999999</frame-color>
+  <fill-color>#999999</fill-color>
+  <dither-pattern>I45</dither-pattern>
+  <width>1</width>
+  <visible>false</visible>
+ </properties>
+ <properties>
+  <name>999/1 DRC Errors</name>
+  <source>999/1@1</source>
+  <frame-color>#BB0000</frame-color>
+  <fill-color>#ff0000</fill-color>
+  <dither-pattern>I15</dither-pattern>
+  <width>3</width>
+ </properties>
+</layer-properties>
