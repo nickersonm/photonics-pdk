@@ -9,7 +9,8 @@
 # 
 
 """
-Stepper2 (GCA AutoStep 200) tool markings
+Stepper2 (GCA AutoStep 200) tool markings.
+(c) Michael Nickerson 2023
 """
 
 import nazca
@@ -22,8 +23,7 @@ from marks_NanoFab import fCommon
 
 # Global alignment mark
 def GlobalAlign(layer=1, background=None, grow_background=10):
-    """
-    GlobalAlign Global alignment mark for AutoStep 200 ('star')
+    """Global alignment mark for AutoStep 200 ('star').
 
     Args:
         layer (xs or layer): Cross-section [str] or layer(s) to place mark in
@@ -56,8 +56,7 @@ def GlobalAlign(layer=1, background=None, grow_background=10):
 
 # Local alignment mark
 def LocalAlign(layer=1, background=None, grow_background=10):
-    """
-    LocalAlign Local DFAS alignment mark for AutoStep 200
+    """Local DFAS alignment mark for AutoStep 200.
     
     Args:
         layer (xs or layer): Cross-section [str] or layer(s) to place mark in
@@ -90,8 +89,7 @@ def LocalAlign(layer=1, background=None, grow_background=10):
 
 # Die definition
 def die(layer=1001, size=[14800, 14800]):
-    """
-    die Generates die outline for AutoStep 200
+    """Generates die outline for AutoStep 200.
 
     Args:
         layer (int, optional): Outline layer; likely 'comment' layer. Defaults to 1001.
@@ -113,8 +111,7 @@ def die(layer=1001, size=[14800, 14800]):
 # Mask marking
 def ReticleMarks(layer=1, scale=1, darkfield=True, 
                  inner=[-9200, -9200, 9200, 9200], innerstepback=0):
-    """
-    Reticle alignment marks for AutoStep 200
+    """Reticle alignment marks for AutoStep 200.
     
     Args:
         layer (xs or layer): Cross-section [str] or layer(s) to place reticle
@@ -159,8 +156,7 @@ def ReticleMarks(layer=1, scale=1, darkfield=True,
 
 # Prepare a reticle with marks and cell
 def addReticles(cell, layers=None, darkfield=True, instantiate=True):
-    """
-    Add 5-inch reticle(s) for AutoStep 200 to a cell
+    """Add 5-inch reticle(s) for AutoStep 200 to a cell.
     
     Args:
         cell (Cell): cell to place in middle of mask at (0,0)

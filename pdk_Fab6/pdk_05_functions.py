@@ -4,12 +4,12 @@
 # 
 # @Authors: Michael Nickerson
 # @email: nickersonm@ece.ucsb.edu
-# 2022(c)
+# 2023(c)
 # 
 
 """
-Utility functions for pdk_Fab6
-(c) Michael Nickerson 2022
+Utility functions for pdk_Fab6.
+(c) Michael Nickerson 2023
 """
 
 import nazca
@@ -27,18 +27,22 @@ import gdstk    # https://heitzmann.github.io/gdstk/reference_python.html
 ### General helper functions
 # Typical safe taper length for deep etched ridges from simulation
 taperLen = lambda w1, w2 : round(abs(w2-w1)*30, 1)
+"""Typical safe taper length for deep etched ridges from simulation"""
 
 # Flip a cell
 nazca.Cell.flip = lambda self : cellFlipPins(self)
+"""Flip a cell with `nazca.cell.flip`."""
 
 # Change a cell name
 def cellChangeName(cell, newname):
+    """Change a cell name."""
     nazca.cfg.cellnames.pop(cell.cell_name)
     cell.cell_name = newname
     nazca.cfg.cellnames[newname] = cell
 
 # Parse a pin/location/node into a real Pin object, with all transformations applied
 def parsePin(pin, default='out', rot=False):
+    """Parse a pin/location/node into a real Pin object, with all transformations applied."""
     pin, T = nazca.netlist.parse_pin(pin, default=default)
     if T != [0, 0, 0] or not isinstance(pin, nazca.Node):
         pin  = pin.move(*T)
@@ -46,13 +50,15 @@ def parsePin(pin, default='out', rot=False):
             pin = pin.rot(180)
     return pin
 
-# Get the geometric length between two pins
+# Get the geometric length between two pins with `nazca.cell.geolen`
 def pinGeoDiff(p1, p2):
+    """Get the geometric length between two pins with `nazca.cell.geolen`."""
     return (nazca.diff(p1, p2)[0]**2 +nazca.diff(p1, p2)[1])**0.5
 nazca.Cell.geolen = lambda self : pinGeoDiff(self.pinin, self.pinout)
 
 # Simple debugging function to plot polygons
 def plotPolygon(p):
+    """Simple debugging function to plot polygons."""
     with nazca.Cell(instantiate=False) as tmp:
         for p in p:
             nazca.Polygon(points=p, layer=1001).put(0)
@@ -61,6 +67,7 @@ def plotPolygon(p):
 
 # Generic array of cells
 def cellArray(cells, space=20, nx=3):
+    """Generic array of cells."""
     nx = round(nx)
     # Break into chunks; alternate: numpy.array_split
     cells = [cells[i:i + nx] for i in range(0, len(cells), nx)]
@@ -83,10 +90,11 @@ def cellArray(cells, space=20, nx=3):
 # Get polygons from a cell layer
 def cell_get_polygons(self, layers):
     """Return all polygons in <layers> as point lists.
-
+    Also callable as `nazca.cell.get_polygons`.
+    
     Args:
         layers (list of str): names of layers to retreive polygons from
-
+    
     Returns:
         List: list of polygon points
     """
@@ -104,13 +112,14 @@ nazca.Cell.get_polygons = cell_get_polygons
 
 # Remove a layer from a cell
 def cell_remove_layer(self, layers, name=None, instantiate=None):
-    """Remove all polygons in <layers>.
-
+    """Remove all polygons in `layers`.
+    Also callable as `nazca.cell.remove_layer`.
+    
     Args:
         layers (list of str or int or xs): names of layers to delete polygons from
         name (str): new name for the cell
         instantiate (bool): instantiate the new cell?
-
+    
     Returns:
         Cell: new cell with removed polygons
     """
@@ -148,11 +157,12 @@ nazca.Cell.remove_layer = cell_remove_layer
 #   Don't use when the cell includes holes or concentric items
 def cell_flatten(self, name=None, instantiate=None):
     """Rebuild cell to merge all polygons per layer.
-
+    Also callable as `nazca.cell.flatten`.
+    
     Args:
         name (str): new name for the cell
         instantiate (bool): instantiate the new cell?
-
+    
     Returns:
         Cell: new cell with merged polygons
     """
@@ -219,7 +229,8 @@ nazca.Cell.flatten = cell_flatten
 
 # Diff/clip layers of a cell
 def cell_polydiff_layer(self, clip_poly, mod_layer=1001, operation='not'):
-    """Rebuild cell to clip all polygons in specified layer(s); implicitly flattens mod_layer
+    """Rebuild cell to clip all polygons in specified layer(s); implicitly flattens mod_layer.
+    Also callable as `nazca.cell.polydiff_layer`.
     
     Args:
         clip_poly (list): polygon geometry to use as clip
@@ -283,7 +294,8 @@ nazca.Cell.polydiff_layer = cell_polydiff_layer
 
 # Invert layers of a cell according to existing layer or bounding box
 def cell_invert(self, bounds, mod_layers, name=None, instantiate=None, keepother=False):
-    """Build new cell with polygons in specified layer(s) inverted; implicitly flattens mod_layer
+    """Build new cell with polygons in specified layer(s) inverted; implicitly flattens mod_layer.
+    Also callable as `nazca.cell.invert`.
     
     Args:
         bounds (int, str, or polygon): layers or polygon to define inversion boundary
@@ -365,12 +377,13 @@ nazca.Cell.invert = cell_invert
 
 # Diff/clip layers of a cell
 def cell_diff_layers(self, clip_layer=1, mod_layer=1001):
-    """Modify current cell by clipping layers
-
+    """Modify current cell by clipping layers.
+    Also callable as `nazca.cell.diff_layers`.
+    
     Args:
         clip_layer (int or str): layer defining negative clip, will not change
         mod_layer (int or str): layer to modify; layer2' = layer2 - layer1
-
+    
     Returns:
         Cell: modified self
     """
@@ -393,8 +406,9 @@ nazca.Cell.diff_layers = cell_diff_layers
 #   Calculation already implemented in nazca.generic_bend.sinebend_point
 # Explicitly specified
 def Tp_sinbend_dw(self, length=100, **kwargs):
-    """Create a variable-width sine bend interconnect
-
+    """Create a variable-width sine bend interconnect.
+    Also callable as `nazca.Interconnect.sinebend_dw`.
+    
     Args:
         length (float): interconnect length (dX)
         offset (float): interconnect offset (dY)
@@ -406,7 +420,7 @@ def Tp_sinbend_dw(self, length=100, **kwargs):
         N (int): number of polygon points (default 1/µm)
         arrow (bool): draw connection arrows
         **kwarg: free parameters
-
+    
     Returns:
         Cell: sine bend element
     """
@@ -430,19 +444,20 @@ nazca.interconnects.Interconnect.sinebend_dw = Tp_sinbend_dw
 
 # Minimum length of a sine bend for a given offset and radius
 def sinebend_minlen(dy, radius):
+    """Minimum length of a sine bend for a given offset and radius."""
     return (2*pi*abs(dy)*abs(radius))**0.5
 
 
 ## Simple bend with zero-curvature endpoints
 def ic_euler_bend(self, angle=180, radius=None, width=None, 
                   arrow=True, instantiate=True):
-    """ic_euler_bend:
-        Simple Euler bend of total <angle> with zero-curvature endpoints
-
+    """Simple Euler bend of total <angle> with zero-curvature endpoints.
+    Also callable as `nazca.Interconnect.euler_bend`.
+    
     Args:
         angle (float): Total angle to traverse
         radius (float): Minimum radius of curvature; default self.radius
-
+    
     Returns:
         Cell: properly pinned waveguide cell with total waveguide length <length>
     """
@@ -476,8 +491,8 @@ nazca.interconnects.Interconnect.euler_bend = ic_euler_bend
 ## Hairpin bend
 def ic_hairpin(self, radius=None, overangle=50, direction='left', 
                arrow=True, instantiate=True):
-    """ic_hairpin:
-        Create a hairpin bend with continuous curvature via euler() & bend()
+    """Create a hairpin bend with continuous curvature via `euler` & `bend`.
+    Also callable as `nazca.Interconnect.hairpin`.
     
     Args:
         radius (float): Minimum radius of curvature

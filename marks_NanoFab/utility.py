@@ -10,7 +10,8 @@
 # TODO later: merge various outputs with fCommon.polygonMerge
 
 """
-Utility / diagnostic markings
+Utility / diagnostic markings.
+(c) Michael Nickerson 2023
 """
 
 import nazca
@@ -36,8 +37,7 @@ def label(text, height=50, layer=1, grow=0, origin=['lower', 'center'], date=Fal
 
 # Simple box to define a die
 def die(size, layer=1001, grow=None):
-    """
-    die Generates die outline
+    """Generates die outline.
 
     Args:
         size (list<float>): size dxy or [dx,dy] for centered die, or lower-left and upper-right corner [[x0, y0], [x1, y1]]
@@ -67,8 +67,7 @@ def die(size, layer=1001, grow=None):
 
 # Typical style DEKTAK triple-ridge
 def DEKTAK(xs_pad, xs_background=None, grow_pad=None, grow_background=10):
-    """DEKTAK:
-        Three 20x80 µm pads separated by 20 µm for DEKTAK depth measurement
+    """Three 20x80 µm pads separated by 20 µm for DEKTAK depth measurement.
 
     Args:
         xs_pad (xs or layer): Pads defined in this cross-section [str] or layer(s) [int or list(int)].
@@ -94,8 +93,7 @@ def DEKTAK(xs_pad, xs_background=None, grow_pad=None, grow_background=10):
 
 # DEKTAK box
 def DEKTAK_box(xs_pad, xs_background=None, grow_pad=None, grow_background=10):
-    """DEKTAK_box:
-        20 µm thick box/frame across 80x80 µm for DEKTAK depth measurement
+    """20 µm thick box/frame across 80x80 µm for DEKTAK depth measurement.
 
     Args:
         xs_pad (xs or layer): Pads defined in this cross-section [str] or layer(s) [int or list(int)].
@@ -122,8 +120,7 @@ def DEKTAK_box(xs_pad, xs_background=None, grow_pad=None, grow_background=10):
 
 # Vernier
 def Vernier(xs_center, xs_surround, xs_background=None, grow_background=10):
-    """Vernier:
-        Vernier marks for layer alignment verification
+    """Vernier marks for layer alignment verification.
 
     Args:
         xs_center (xs or layer): Cross-section [str] or layer(s) for center mark
@@ -165,9 +162,7 @@ def Vernier(xs_center, xs_surround, xs_background=None, grow_background=10):
 
 # Square TLM pads
 def SquareTLM(xs_pad, xs_background=None, grow_pad=None, grow_background=10, padsize=100, spacing=[3, 4, 6, 10, 15, 20, 25]):
-    """
-    SquareTLM:
-        Square-pad TLM pattern
+    """Square-pad TLM pattern.
 
     Args:
         xs_pad (xs or layer): Pads defined in this cross-section [str] or layer(s) [int or list(int)]
@@ -200,9 +195,7 @@ def SquareTLM(xs_pad, xs_background=None, grow_pad=None, grow_background=10, pad
 
 # Concentric TLMs [Reeves 1980 https://doi.org/10/dqkw2f ]
 def ConcentricTLM(xs_pad, xs_background=None, grow_pad=None, grow_background=20, r0=15, ratio=[1.65, 2.74, 4.34, 5.45]):
-    """
-    ConcentricTLM:
-        Concentric circular-pad TLM pattern as in Reeves 1980 ( https://doi.org/10/dqkw2f )
+    """Concentric circular-pad TLM pattern as in Reeves 1980 (<https://doi.org/10/dqkw2f>).
 
     Args:
         xs_pad (xs or layer): Pads defined in this cross-section [str] or layer(s) [int or list(int)]
@@ -249,9 +242,7 @@ def ConcentricTLM(xs_pad, xs_background=None, grow_pad=None, grow_background=20,
 
 # Circular TLM array [Pan 2013 https://doi.org/10/ghjtgf ]
 def CircularTLM(xs_pad, xs_background=None, grow_pad=None, grow_background=10, r0=[5, 6.5, 9], ratio=[1, 1.5, 2.5], buffer=40, ratio_outer=1.25):
-    """
-    CircularTLM:
-        Array of circular TLM patterns as in Pan 2013 ( https://doi.org/10/ghjtgf )
+    """Array of circular TLM patterns as in Pan 2013 (<https://doi.org/10/ghjtgf>).
 
     Args:
         xs_pad (xs or layer): Pads defined in this cross-section [str] or layer(s) [int or list(int)]
@@ -318,9 +309,7 @@ def CircularTLM(xs_pad, xs_background=None, grow_pad=None, grow_background=10, r
 
 # Layer label[s]
 def LayerLabels(layers=None, size=25, labels=[]):
-    """
-    LayerLabels:
-        Generates one or more labels for passed layers, in the form of '[#] layername'
+    """Generates one or more labels for passed layers, in the form of '[#] layername'.
 
     Args:
         layers (int, str, or list, optional): Layer(s) to generate labels for; if None, will use all layers
@@ -362,172 +351,11 @@ def LayerLabels(layers=None, size=25, labels=[]):
 
 
 # Resolution test
-## Single cell
-def ResolutionTest(xs_pattern, xs_background=None, scale=1, 
-                   grow_pattern=None, grow_background=5,
-                   no_text=False):
-    """ResolutionTest:
-        Resolution test pattern including lines and checkerboard
-    
-    Args:
-        xs_pattern (xs or layer): Pads defined in this cross-section [str] or layer(s) [int or list(int)].
-        xs_background (xs or layer, optional): Background defined in this cross-section or layer.
-        scale (float): Resolution to test in µm. Default 1.
-        grow_* (int or list(int), optional): Grow associated geometry accordingly.
-        no_text (bool): Omit text. Default False.
-    
-    Returns:
-        Cell: Centered-origin resolution test pattern
-    """
-    boxSize = 20
-    
-    # Process inputs, name, and deduplicate
-    xs_pattern = layerlist(xs_pattern)
-    name = 'ResolutionTest.'+str(scale)+'.'+str(xs_pattern)
-    if xs_background is not None:
-        xs_background = layerlist(xs_background)
-        name += '/'+str(xs_background)
-    if name in nazca.cfg.cellnames.keys():
-        return nazca.cfg.cellnames[name]
-    
-    # Define and deduplicate components to reduce filesize
-    # Checkerboard component; smaller to define entire pattern
-    checkerName = 'checkerboard.'+str([xs_pattern,grow_pattern])
-    if checkerName in nazca.cfg.cellnames.keys():
-        checkerboard = nazca.cfg.cellnames[checkerName]
-    else:
-        with nazca.Cell(instantiate=False) as checkerboard:
-            box = layerRectangle(layers=xs_pattern, grow_layers=grow_pattern, dx=1)
-            for j in range(7):
-                for i in range(7):
-                    if mod(i+j,2)==0:
-                        box.put((i-7/2), (j-7/2))
-        checkerboard = checkerboard.flatten(name=checkerName, instantiate=True)
-    
-    # Dot grid component; dot is a separate pattern as it has 24 vertices
-    dotName = 'dot.'+str(xs_pattern)+'+'+str(grow_pattern)
-    if dotName in nazca.cfg.cellnames.keys():
-        dot = nazca.cfg.cellnames[dotName]
-    else:
-        with nazca.Cell(name=dotName) as dot:
-            layerPolygon(layers=xs_pattern, 
-                         poly=nazca.geom.circle(radius=(2**0.5)/2, N=24),
-                         grow=grow_pattern).put(0)
-    with nazca.Cell(instantiate=False) as dotgrid:
-        for j in range(7):
-            for i in range(7):
-                if mod(i+j,2)==0:
-                    dot.put(scale*(i-7/2), scale*(j-7/2), scale=scale)
-    
-    # Add checkerboards and lines
-    with nazca.Cell(name=name, instantiate=True) as mark:
-        if xs_background is not None:
-            layerRectangle(layers=xs_background, grow_layers=grow_background, 
-                           dx=scale*boxSize).put(0,0)
-        
-        # Checkerboard pattern
-        checkerboard.put(scale*(-boxSize/2+7/2), 
-                         scale*(-boxSize/2+7/2),
-                         scale=scale)
-        
-        # Stripes
-        for i in range(7):
-            if mod(i,2)==1:
-                # Horizontal stripes
-                layerPolygon(layers=xs_pattern, 
-                             poly=nazca.geom.rectangle(length=scale*(boxSize-7-i), 
-                                                             height=scale, 
-                                                             position=2), 
-                             grow=grow_pattern).put(scale*(-boxSize/2+7-0.5),
-                                                    scale*(-boxSize/2+i))
-                # Vertical stripes
-                layerPolygon(layers=xs_pattern, 
-                             poly=nazca.geom.rectangle(length=scale*(boxSize-7-i), 
-                                                             height=scale, 
-                                                             position=2), 
-                             grow=grow_pattern).put(scale*(boxSize/2-1-i),
-                                                    scale*(-boxSize/2+i-0.5), 90)
-        
-        # Dot grid
-        dotgrid.put(scale*(boxSize/2-7/2), 
-                    scale*(boxSize/2-7/2))
-        
-        # Label
-        if not no_text:
-            cellShift(nazca.Font(fontfile='nazca').text(text='%.1f'%scale, 
-                                                        height=scale*boxSize/2.5, 
-                                                        layer=xs_pattern,
-                                                        align='rb'),
-                    ['bottom', 'right']).put(scale*(boxSize/2-9-1), 
-                                            -scale*(boxSize/2-9))
-    
-    return mark
-
-
-## Nested resolution tests
-def matryoshkaResolution(xs_pattern, xs_background=None, 
-                         grow_pattern=None, grow_background=5, 
-                         scale_max=5, scale_min=0.2):
-    """matryoshkaResolution:
-        Nested, unlabeled resolution test patterns of reducing size
-    
-    Args:
-        xs_pattern (xs or layer): Pads defined in this cross-section [str] or layer(s) [int or list(int)].
-        xs_background (xs or layer, optional): Background defined in this cross-section or layer.
-        grow_* (int or list(int), optional): Grow associated geometry accordingly.
-        scale_max (float): Maximum test resolution [µm]
-        scale_min (float): Minimum test resolution [µm]
-    
-    Returns:
-        Cell: Centered-origin resolution test pattern
-    """
-    boxSize = 20    # from ResolutionTest
-    
-    # Process inputs, name, and deduplicate
-    scale_max = round(scale_max, 1)
-    xs_pattern = layerlist(xs_pattern)
-    name = 'matryoshkaResolution.'+str(scale_max)+'-'+str(scale_min)+'.'+str(xs_pattern)
-    if xs_background is not None:
-        xs_background = layerlist(xs_background)
-        name += '/'+str(xs_background)
-    if name in nazca.cfg.cellnames.keys():
-        return nazca.cfg.cellnames[name]
-    
-    # Generate mark
-    with nazca.Cell(name=name, instantiate=True) as mark:
-        if xs_background is not None:
-            layerRectangle(layers=xs_background, 
-                           dx=scale_max*boxSize+2*grow_background,
-                           dy=scale_max*boxSize+2*grow_background, 
-                           position=5).put(0,0)
-        
-        # Place test patterns
-        x=0
-        scale = []
-        s = scale_max
-        while s >= scale_min:
-            scale += ['%.1f'%s]
-            ResolutionTest(scale=s, xs_pattern=xs_pattern, xs_background=None,
-                           grow_pattern=grow_pattern, no_text=True).put(-x, x)
-            
-            # Update variables
-            x += s*boxSize/5
-            s = round(s/2, 1)
-        
-        # Label
-        nazca.Font(fontfile='nazca').text(text=', '.join(flip(scale)), strokewidth=(scale_max + 4*scale_min)/5, 
-                                          layer=xs_pattern, align='cb').\
-                                              put(0, scale_max*boxSize/2+5)
-    
-    return mark
-
-
 ## Improved test block
 def ResolutionBlock(xs_pattern, xs_background=None, res=0.5, box_size=15, 
                     grow_pattern=None, grow_background=5):
-    """ResolutionBlock:
-        Resolution test pattern; all quadrants visible for test resolution, 
-            diagonals for lower resolution, one side for uneven thresholding
+    """Resolution test pattern; all quadrants visible for test resolution, 
+            diagonals for lower resolution, one side for uneven thresholding.
     
     Args:
         xs_pattern (xs or layer): Cross-section [str] or layer(s) [int or list(int)] for test pattern.
@@ -623,8 +451,7 @@ def ResolutionBlock(xs_pattern, xs_background=None, res=0.5, box_size=15,
 def ResolutionBlockSet(xs_pattern, res=[0.6, 0.7, 0.8, 0.9, 1.0, 1.1], 
                        box_size=15, with_label=True, label_size=20, 
                        xs_background=None, grow_pattern=None, grow_background=5):
-    """ResolutionBlockSet:
-        Set of resolution block test patterns at different resolutions, with labels, in two rows
+    """Set of resolution block test patterns at different resolutions, with labels, in two rows.
     
     Args:
         xs_pattern (xs or layer): Cross-section [str] or layer(s) [int or list(int)] for test pattern.

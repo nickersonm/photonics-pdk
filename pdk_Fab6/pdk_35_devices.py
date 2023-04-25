@@ -4,12 +4,12 @@
 # 
 # @Authors: Michael Nickerson
 # @email: nickersonm@ece.ucsb.edu
-# 2022(c)
+# 2023(c)
 # 
 
 """
-Complete devices in 'Fab6' process
-(c) Michael Nickerson 2022
+Complete devices in 'Fab6' process.
+(c) Michael Nickerson 2023
 
     Devices:
         deviceMMI(): 1xN MMI plus fan-out to specified pitch
@@ -40,8 +40,7 @@ def deviceMMI(N=2, pitch=contactWidth + metalBuffer, radius=None,
               straight=metalBuffer, dW=None, dL=None, 
               nr=None, xs='wgBend', 
               instantiate=True, arrow=True):
-    """deviceMMI:
-        1xN MMI splitter with fan-out to <pitch> pitch
+    """1xN MMI splitter with fan-out to <pitch> pitch.
     
     Args:
         N (int): MMI outputs, ≥2
@@ -87,8 +86,7 @@ def deviceMMI22(pitch=contactWidth + metalBuffer, radius=None,
                 straight=metalBuffer, dW=None, dL=None, 
                 nr=None, xs='wgBend', 
                 instantiate=True, arrow=True):
-    """deviceMMI22:
-        2x2 MMI splitter with fani-in and fan-out to <pitch> pitch
+    """2x2 MMI splitter with fan-in and fan-out to <pitch> pitch.
     
     Args:
         pitch (float): output pitch
@@ -137,8 +135,7 @@ def deviceMMI_tree(N=2, k=3, pitch=contactWidth + metalBuffer, radius=None,
                    straight=metalBuffer, dW=None, dL=None, nr=None, 
                    xs='wgBend', 
                    instantiate=True, arrow=True):
-    """deviceMMI_tree:
-        1xN^k MMI tree; <k> deep with <N> per stage
+    """1xN^k MMI tree; <k> deep with <N> per stage.
     
     Args:
         N (int): Number of MMI outputs
@@ -197,8 +194,7 @@ def deviceModulator(length=1000, isolation=True, ploc=0,
                     xs1='wgPassive', w1=None, 
                     xs2=None, w2=None, 
                     arrow=True, instantiate=True):
-    """deviceModulator:
-        Straight phase modulator, including isolation regions and top metal. Requires electrical connection at either end.
+    """Straight phase modulator, including isolation regions and top metal. Requires electrical connection at either end.
     
     Args:
         length (float): Length of modulator, excluding required isolation
@@ -266,8 +262,7 @@ def deviceMZM(length=2000, pitch=None, ploc=0.5,
               dual=True, xsIO='wgPassive', 
               devicefunc=deviceModulator, 
               arrow=True, instantiate=True):
-    """deviceMZM:
-        Mach-Zhender Modulator: 1x2 MMI, modulators, 2x1 MMI
+    """Mach-Zehnder Modulator: 1x2 MMI, modulators, 2x1 MMI.
     
     Args:
         length (float): Modulator length
@@ -275,7 +270,7 @@ def deviceMZM(length=2000, pitch=None, ploc=0.5,
         ploc (float): Fractional distance along modulators for additional electrical connection
         dual (bool): Modulators in both arms
         xs (str): cross-section for passive lengths
-        devicef (function): Device function for alternative MZMs
+        devicefunc (function): Device function for alternative MZMs
         arrow (bool): Draw arrows?
     
     Returns:
@@ -325,8 +320,7 @@ def devicePMArray(length=2000, pitch=contactWidth + metalBuffer, radius=None,
                   straightin=None, straightout=None, straightsoa=None, 
                   soa=None, soacleave=False, soacleavelen=None, outputpitch=None, 
                   xs='wgBend', instantiate=True, arrow=True):
-    """devicePMArray:
-        1xN phase modulator array
+    """1xN phase modulator array.
     
     Args:
         length (float): modulated length
@@ -458,8 +452,7 @@ def deviceSOA(length=500, ploc=0.5,
               xs1='wgPassive', w1=None, 
               xs2=None, w2=None, 
               arrow=True, instantiate=True):
-    """deviceSOA:
-        Straight active region, including top metal and optionally transitions. Requires electrical connection.
+    """Straight active region, including top metal and optionally transitions. Requires electrical connection.
     
     Args:
         length (float): Length of active region
@@ -522,8 +515,7 @@ def deviceDFB(type='GC', order=4,
               plen=[1], l0=1.03, d0=3.25, 
               xs2='wgPassive', w2=None, 
               arrow=True, instantiate=True):
-    """deviceDFB:
-        DFB with specified grating type
+    """DFB with specified grating type.
     
     Args:
         type (string): Type of DFB; only 'GC' available
@@ -618,8 +610,7 @@ def deviceDBR(type='VC', order=4,
               gratinglength=600, rfrac=0.30, 
               activelength=500, ploc=0.5, l0=1.03,
               arrow=True, instantiate=True):
-    """deviceDFB:
-        DBR with specified grating type
+    """DBR with specified grating type.
     
     Args:
         type (string): Type of DFB, either 'VC' or 'LC'
@@ -689,8 +680,7 @@ def deviceCCDBR(type='VC', order=4, passivelength=cleaveWidth*3,
                 gratinglength=300, activelength=500, 
                 ploc=0.5, l0=1.03, xsCC='wgShallow', 
                 arrow=True, instantiate=True):
-    """deviceCCDBR:
-        Corner-cube + DBR laser of specified type
+    """Corner-cube + DBR laser of specified type.
     
     Args:
         type (string): Type of DFB, either 'VC' or 'LC'

@@ -4,12 +4,12 @@
 # 
 # @Authors: Michael Nickerson
 # @email: nickersonm@ece.ucsb.edu
-# 2022(c)
+# 2023(c)
 # 
 
 """
-Simple components for 'Fab6' process
-(c) Michael Nickerson 2022
+Simple components for 'Fab6' process.
+(c) Michael Nickerson 2023
 
     Marks:
         markVernier: vernier marks for all layers
@@ -89,6 +89,7 @@ metalP.pinstyle = 'metal'
 ### Test structures and alignment marks
 # Verniers
 with nazca.Cell(name='markVernier') as markVernier:
+    """Vernier array for all relevant layers"""
     cellArray([marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='ProtectRegrowth'),
                marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='EtchRib'),
                marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='EtchIso'),
@@ -99,6 +100,7 @@ with nazca.Cell(name='markVernier') as markVernier:
 
 # Resolution test, all layers
 with nazca.Cell(name='markResolution') as markResolution:
+    """Resolution test array for all relevant layers"""
     cellArray([marks.utility.ResolutionBlockSet(xs_pattern='ProtectRegrowth', xs_background=1001),
                marks.utility.ResolutionBlockSet(xs_pattern='ProtectRidge',    xs_background=1001),
                marks.utility.ResolutionBlockSet(xs_pattern='EtchRib',         xs_background='ProtectRidge'),
@@ -111,6 +113,7 @@ with nazca.Cell(name='markResolution') as markResolution:
 
 # DEKTAK tests
 with nazca.Cell(name='markDEKTAK') as markDEKTAK:
+    """DEKTAK marks for all relevant layers"""
     cellArray([marks.utility.DEKTAK_box(xs_pad='ProtectRegrowth', xs_background=1001),
                marks.utility.DEKTAK_box(xs_pad='ProtectRidge', xs_background=1001),
                marks.utility.DEKTAK_box(xs_pad='EtchRib',   xs_background='ProtectRidge'),
@@ -122,6 +125,7 @@ with nazca.Cell(name='markDEKTAK') as markDEKTAK:
 
 # TLM measurements
 with nazca.Cell(name='markTLM') as markTLM:
+    """TLM tests"""
     marks.utility.cellShift(marks.utility.ConcentricTLM(xs_pad=['MetalTop', 'MetalVia'], 
                                                         grow_pad=[2, 0], 
                                                         xs_background='ProtectRidge',
@@ -137,6 +141,7 @@ with nazca.Cell(name='markTLM') as markTLM:
 
 # Corner mark
 with nazca.Cell(name='dieCorner') as markCorner:
+    """Mark for die corner"""
     marks.utility.layerPolygon(
         poly=[(0, 0), (100, 0), (100, 10),
               (10, 10), (10, 100), (0, 100)], 
@@ -166,6 +171,7 @@ def trOpenP(length=None, width=wgActive.width,
             height=None, 
             contactWidth=contactWidth, angle=60, 
             instantiate=True):
+    """Transition to open p-metal."""
     # Process inputs
     height = width - 2*viaInsetRib if height is None else height
     length = ceil(height/tan(angle*pi/180) * 10)/10 if length is None else length
@@ -199,6 +205,7 @@ def trOpenP(length=None, width=wgActive.width,
 ## Generic taper
 def trTaper(length=None, xs1='wgBend', xs2='wgPassive', 
             w1=None, w2=None, instantiate=True):
+    """Generic passive taper."""
     # Process inputs
     ic1 = nazca.interconnects.Interconnect(xs=xs1)
     ic2 = nazca.interconnects.Interconnect(xs=xs2)
@@ -232,6 +239,7 @@ def trTaper(length=None, xs1='wgBend', xs2='wgPassive',
 #   If changing layers here, update pdk_20_technology.wgIso as well
 def trPassive2Iso(length=None, xs1='wgPassive', 
                   w1=None, w2=None, instantiate=True):
+    """Transition from deep to isolation."""
     # Process inputs
     ic1 = nazca.interconnects.Interconnect(xs=xs1)
     w1 = ic1._getwidth(width=w1)
@@ -273,6 +281,7 @@ def trPassive2Iso(length=None, xs1='wgPassive',
 def trPassive2Mod(length=None, xs1='wgPassive', 
                   w1=None, w2=None, 
                   contactWidth=contactWidth, angle=60, instantiate=True):
+    """Transition from deep to modulator."""
     # Process inputs
     ic1 = nazca.interconnects.Interconnect(xs=xs1)
     w1 = ic1._getwidth(width=w1)
@@ -313,6 +322,7 @@ def trPassive2Mod(length=None, xs1='wgPassive',
 def trPassive2ActiveDeep(length=None, xs1='wgPassive', 
                          w1=None, w2=None, 
                          contactWidth=contactWidth, angle=60, instantiate=True):
+    """Transition from passive deep to active deep."""
     # Process inputs
     ic1 = nazca.interconnects.Interconnect(xs=xs1)
     w1 = ic1._getwidth(width=w1)
@@ -351,6 +361,7 @@ def trPassive2ActiveDeep(length=None, xs1='wgPassive',
 ## Passive to active, both shallow
 #   If changing layers here, update pdk_20_technology.wgActive as well
 with nazca.Cell(instantiate=True, name='trShallow2Active') as trShallow2Active:
+    """Transition from passive shallow to active shallow."""
     angle = 60
     height = wgActive.pedestal + 2*typicalBuffer
     length = ceil(height/tan(angle*pi/180) * 10)/10
@@ -378,6 +389,7 @@ with nazca.Cell(instantiate=True, name='trShallow2Active') as trShallow2Active:
 def segmentIsolation(xs1='wgPassive', xs2='wgPassive', 
                      w1=None, w2=None, 
                      length=40, instantiate=True):
+    """Electrical isolation segment."""
     # Name and deduplicate
     name = f'SegmentIsolation.{xs1}_{xs2}.'+str([length, w1, w2])
     if name in nazca.cfg.cellnames.keys() and instantiate == True:
@@ -397,6 +409,7 @@ def segmentIsolation(xs1='wgPassive', xs2='wgPassive',
 def segmentSDT(wTR0=None, wTR1=6.5, wShallow=3, wDeep=2, 
                lTR1=6, lTR2=90, lTRs=30, 
                xs2='wgPassive', w2=None, instantiate=True):
+    """Taper from shallow to deep."""
     # Process inputs
     ic = nazca.interconnects.Interconnect(xs=xs2)
     w2 = ic._getwidth(None, w2, 'wgBend')
@@ -438,6 +451,7 @@ def segmentSDT(wTR0=None, wTR1=6.5, wShallow=3, wDeep=2,
 
 ## Gain-coupled active region grating cell; no vias or contacts
 def segmentGCDFB(order=4, w=None, nA=3.4420, nB=3.4402, l0=1.03, instantiate=True):
+    """Gain-coupled active region grating cell; no vias or contacts."""
     # Verify inputs
     w = icActive._getwidth(None, w, 'wgPassive')
     nA = 3.4420 if nA is None else nA
@@ -470,6 +484,7 @@ def segmentGCDFB(order=4, w=None, nA=3.4420, nB=3.4402, l0=1.03, instantiate=Tru
 
 ## Vertically-coupled deep-ridge DBR unit cell
 def segmentVCDBR(order=4, w=None, nA=3.4241, nB=3.4157, l0=1.03, instantiate=True):
+    """Vertically-coupled deep-ridge DBR unit cell"""
     # Verify inputs
     w = icPassive._getwidth(None, w, 'wgPassive')
     nA = 3.4241 if nA is None else nA
@@ -500,6 +515,7 @@ def segmentVCDBR(order=4, w=None, nA=3.4241, nB=3.4157, l0=1.03, instantiate=Tru
 ## Laterally-coupled shallow-rib DBR unit cell
 def segmentLCDBR(order=4, wA=wgShallow.pedestal, wB=6, nA=3.4402, nB=3.4383, l0=1.03, 
                  neff=lambda w: -0.0714*(w**-1.957) + 3.4404, instantiate=True):
+    """Laterally-coupled shallow-rib DBR unit cell."""
     # If neff lambda provided, use it to recalculate n1 and n2
     if callable(neff):
         nA = round(neff(wA), 6)
@@ -535,6 +551,7 @@ def segmentLCDBR(order=4, wA=wgShallow.pedestal, wB=6, nA=3.4402, nB=3.4383, l0=
 
 ## Electrical bond pad
 def segmentPad(width=150, length=200, taper=traceWidth, instantiate=True):
+    """Electrical bond pad."""
     # Name and deduplicate
     name = 'segmentPad.'+str([width, length, taper])
     if name in nazca.cfg.cellnames.keys() and instantiate == True:
@@ -556,6 +573,7 @@ def segmentPad(width=150, length=200, taper=traceWidth, instantiate=True):
 
 ## Short inline pad
 def segmentInlinePad(length=200, height=125, instantiate=True):
+    """Short inline pad"""
     # Name and deduplicate
     name = 'segmentInlinePad.'+str([length, height])
     if name in nazca.cfg.cellnames.keys() and instantiate == True:
@@ -574,8 +592,7 @@ def segmentInlinePad(length=200, height=125, instantiate=True):
 def componentSSC(width=5, length=80, xs='wgPassive', 
                  straight=cleaveWidth*1.5, angle=0, 
                  instantiate=True):
-    """componentSSC:
-        SSC to couple 2 µm MFD free-space gaussian mode to ridge WG
+    """SSC to couple 2 µm MFD free-space gaussian mode to ridge WG.
     
     Args:
         width (float): FS side width
@@ -617,8 +634,7 @@ def componentSSC(width=5, length=80, xs='wgPassive',
 def componentMMI(N=2, dwMMI=None, dlMMI=None, wMMI=None, lMMI=None, 
                  nr=None, l0=1.03, taperIn=5, taperOut=5, 
                  xs='wgBend', arrow=True, instantiate=True):
-    """componentMMI:
-        1xN MMI: one input, N outputs
+    """1xN MMI: one input, N outputs.
     
     Args:
         N (int): Number of outputs
@@ -720,8 +736,7 @@ def componentMMI(N=2, dwMMI=None, dlMMI=None, wMMI=None, lMMI=None,
 def componentMMI22(dwMMI=None, dlMMI=None, wMMI=None, lMMI=None, 
                     nr=None, l0=1.03, taperIn=5, taperOut=5, 
                     xs='wgBend', arrow=True, instantiate=True):
-    """componentMMI22:
-        2x2 MMI: 2 inputs, 2 outputs
+    """2x2 MMI: 2 inputs, 2 outputs.
     
     Args:
         dwMMI (float): Modify width
@@ -822,8 +837,7 @@ def componentMMI22(dwMMI=None, dlMMI=None, wMMI=None, lMMI=None,
 ## 1x1 MMI filter
 def componentFilter(dW=None, dL=None, xs='wgPassive', 
                     arrow=True, instantiate=True):
-    """componentFilter:
-        1x1 MMI filter: one input, one output, rejects higher order modes
+    """1x1 MMI filter: one input, one output, rejects higher order modes.
     
     Args:
         dW (float): Modify width
@@ -841,8 +855,7 @@ def componentFilter(dW=None, dL=None, xs='wgPassive',
 ## Compact U-bend
 def componentUbend(Lin=7, Lout=5, dx=0, dy=-0.32, 
                    width=2.0, instantiate=True):
-    """componentUbend:
-        Compact U-bend reversing direction of wgPassive in 2*Lout horizontal space
+    """Compact U-bend reversing direction of wgPassive in 2*Lout horizontal space.
     
     Args:
         Lin (float): input length
@@ -912,8 +925,7 @@ def componentUbend(Lin=7, Lout=5, dx=0, dy=-0.32,
 ## Compact elliptical 90° corner
 def componentEcorner(Lbend=2.5, dx=0.48, dy=-0.60, 
                      width=2.0, instantiate=True):
-    """componentEcorner:
-        Compact elliptical 90° corner
+    """Compact elliptical 90° corner.
     
     Args:
         Lbend (float): scale size
@@ -977,8 +989,7 @@ def componentEcorner(Lbend=2.5, dx=0.48, dy=-0.60,
 
 ## Corner cube
 def componentCC(angle=44, width=None, xs='wgShallow', instantiate=True):
-    """componentCC:
-        Corner cube connected to wgPassive
+    """Corner cube connected to wgPassive.
     
     Args:
         angle (float): angle of closing waveguides
@@ -1022,8 +1033,7 @@ def componentFan(N=2, pitchin=4, pitchout=127,
                  straightin=0, straightout=0, 
                  xs='wgBend', width=None, radius=None, 
                  arrow=True, instantiate=True):
-    """componentFan:
-        Fan in/out from pitchin to pitchout waveguide spacing
+    """Fan in/out from pitchin to pitchout waveguide spacing.
     
     Args:
         N (int): Number of channels

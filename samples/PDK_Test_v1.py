@@ -4,12 +4,12 @@
 # 
 # @Authors: Michael Nickerson
 # @email: nickersonm@ece.ucsb.edu
-# 2022(c)
+# 2023(c)
 # 
 
 """
 Test mask for PDK development
-(c) Michael Nickerson 2022
+(c) Michael Nickerson 2023
 """
 
 ## Includes and aliases

@@ -4,12 +4,12 @@
 # 
 # @Authors: Michael Nickerson
 # @email: nickersonm@ece.ucsb.edu
-# 2022(c)
+# 2023(c)
 # 
 
 """
-Device utilities on "Fab6" process
-(c) Michael Nickerson 2022
+Device utilities on "Fab6" process.
+(c) Michael Nickerson 2023
 
     Device Utilities:
         inputLabel(): Label plus SSC input
@@ -33,8 +33,7 @@ def inputLabel(text=None, xs='wgPassive', ssc=True, wSSC=None, straight=keepaway
                textheight=textHeight, textlayer='MetalTop', textgrow=0, 
                textx=keepawaySize+metalBuffer+typicalBuffer*2, texty=metalBuffer + 2*typicalBuffer,
                angle=0, anglecomp=False):
-    """inputLabel:
-        Label plus SSC input with optional straight waveguide
+    """Label plus SSC input with optional straight waveguide.
     
     Args:
         text (str): Label of this waveguide
@@ -85,8 +84,7 @@ def inputLabel(text=None, xs='wgPassive', ssc=True, wSSC=None, straight=keepaway
 ## Straight waveguide until reaching given length, with output termination
 def straightToOut(x, xs='wgPassive', ssc=True, wSSC=None, 
                   node=None, angle=0, anglecomp=False):
-    """straightToOut:
-        Straight waveguide until reaching given x-coordinate, with output termination
+    """Straight waveguide until reaching given x-coordinate, with output termination.
     
     Args:
         x (float): X-coordinate to terminate at
@@ -112,8 +110,7 @@ def straightToOut(x, xs='wgPassive', ssc=True, wSSC=None,
 ## Place a modulator then take a waveguide to the output
 def modToOut(x, xs='wgPassive', ssc=True, wSSC=None, node=None, 
              modlen=2000, isolation=True, angle=0, anglecomp=False):
-    """modToOut:
-        Connect the current position to the output x-coordinate, with a modulator before termination
+    """Connect the current position to the output x-coordinate, with a modulator before termination.
     
     Args:
         x (float): X-coordinate to terminate at
@@ -142,8 +139,7 @@ def modToOut(x, xs='wgPassive', ssc=True, wSSC=None, node=None,
 ## Connect the current position to the output x-coordinate, with an SOA before termination
 def soaToOut(x, xs='wgPassive', ssc=True, wSSC=None, node=None, 
              soalen=500, angle=0, anglecomp=False):
-    """soaToOut:
-        Connect the current position to the output x-coordinate, with an SOA before termination
+    """Connect the current position to the output x-coordinate, with an SOA before termination.
     
     Args:
         x (float): X-coordinate to terminate at

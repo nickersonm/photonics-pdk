@@ -8,7 +8,8 @@
 # 
 
 """
-Common utility functions
+Common utility functions.
+(c) Michael Nickerson 2023
 """
 
 import nazca
@@ -16,6 +17,7 @@ import nazca
 
 # Return a list of layers when passed an xs [cross-section] or layer number or list of layer numbers
 def layerlist(xs_or_layer):
+    """Return a list of layers when passed an xs [cross-section] or layer number or list of layer numbers."""
     ll = []
     if isinstance(xs_or_layer, list):
         # List of cross-sections or layer numbers
@@ -43,6 +45,7 @@ def layerlist(xs_or_layer):
 
 # Build a cell out of a polygon on a given set of layers (or cross-section)
 def layerPolygon(layers, poly, grow=None, jointype='miter'):
+    """Build a cell out of a polygon on a given set of layers (or cross-section)."""
     layers = layerlist(layers)
     if not isinstance(grow, list):
         grow = len(layers) * ([0] if grow is None else [grow])
@@ -70,6 +73,7 @@ def layerPolygon(layers, poly, grow=None, jointype='miter'):
 
 # Build a rectangle in a given cross-section
 def layerRectangle(layers, dx, dy=None, offset=(0,0), grow_layers=None, position=5):
+    """Build a rectangle in a given cross-section."""
     dy = dy if dy is not None else dx
     return layerPolygon(layers=layers, poly=nazca.geometries.rectangle(length=dx, height=dy, position=position, shift=offset), grow=grow_layers)
 
@@ -81,28 +85,33 @@ def flat(l):
         else:
             yield t
 def flatten(l):
+    """Flatten a list."""
     return list(flat(l))
 
 
 ## Various simple calculations
 # Add offset to a polygon tuple
 def addPolyOffset(poly, offset):
+    """Add offset to all points in a polygon."""
     return [(p[0] + offset[0], p[1] + offset[1]) for p in poly]
 
 # Width of a cell
 def cellWidth(cell):
+    """Find the width of a cell (x-span)."""
     if cell.bbox is None:   # May not have bbox computed
         cell = cell.rebuild(instantiate=False)
     return abs(cell.bbox[2] - cell.bbox[0])
 
 # Height of a cell
 def cellHeight(cell):
+    """Find the height of a cell (y-span)."""
     if cell.bbox is None:   # May not have bbox computed
         cell = cell.rebuild(instantiate=False)
     return abs(cell.bbox[3] - cell.bbox[1])
 
 # Change offset of cell
 def cellShift(cell, loc='center'):
+    """Adjust cell origin to bounding box center or given edge or corner."""
     if cell.bbox is None:   # May not have bbox computed
         cell = cell.rebuild(instantiate=False)
     
@@ -138,6 +147,7 @@ def cellShift(cell, loc='center'):
 
 # Flip cell pins - only applies to a0, b0
 def cellFlipPins(cell, instantiate=None):
+    """Flip cell pins - only applies to a0, b0."""
     name = cell.cell_name + '_flip'
     instantiate = cell.instantiate
     if name in nazca.cfg.cellnames.keys() and instantiate == True:
@@ -155,7 +165,7 @@ def cellFlipPins(cell, instantiate=None):
 def putCorners(cell, diesize, inset=[50,50], 
                shift=True, quadrants=[1,2,3,4],
                flip=False, flop=False):
-    """Place given cell in corners of given diesize, distributed along x by 'spacing'
+    """Place given cell in corners of given diesize, distributed along x by 'spacing'.
     
     Args:
         cell (Cell): cell to place
@@ -164,7 +174,6 @@ def putCorners(cell, diesize, inset=[50,50],
         shift (bool): shift origin of cell to cell corners before placing
         quadrants (list<float>): place in these quadrants
         flip, flop (bool): flip/flop cells at corners for symmetry; does not adjust cell origin
-        
     
     Returns:
         List: list of polygon points
@@ -198,11 +207,11 @@ def putCorners(cell, diesize, inset=[50,50],
 # Get polygons of a cell and layer
 def cellPolygons(cell, layers):
     """Return all polygons in <layers> as point lists.
-
+    
     Args:
         cell (Cell): cell to get polygons from
         layers (int or str): names of layers to retreive polygons from
-
+    
     Returns:
         List: list of polygon points
     """

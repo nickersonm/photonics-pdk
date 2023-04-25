@@ -2,6 +2,7 @@
 # 
 # Provides standard UCSB NanoFab tool markings
 #   This file for Heidelberg MLA150
+#       https://heidelberg-instruments.com/product/mla150
 #       https://wiki.nanotech.ucsb.edu/wiki/Maskless_Aligner_(Heidelberg_MLA150)
 # 
 # @Authors: Michael Nickerson
@@ -19,14 +20,13 @@ from .fCommon import layerlist, layerPolygon, flatten
 # High-mag alignment mark
 #   https://wiki.nanotech.ucsb.edu/wiki/MLA150_-_CAD_Files_and_Templates
 def AlignHighMag(layer=1, background=None, grow_background=10):
-    """
-    AlignHighMag High-magnification alignment mark for Heidelberg MLA150 ('cross')
-
+    """High-magnification alignment mark for Heidelberg MLA150 ('cross').
+    
     Args:
         layer (xs or layer): Cross-section [str] or layer(s) to place mark in
         background (xs or layer, optional): Bounding background defined in this cross-section or layer
         grow_background (int or list(int), optional): Grow associated geometry accordingly
-
+    
     Returns:
         Cell: Centered-origin alignment mark
     """

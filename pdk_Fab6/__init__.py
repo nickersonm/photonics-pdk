@@ -4,12 +4,12 @@
 # 
 # @Authors: Michael Nickerson
 # @email: nickersonm@ece.ucsb.edu
-# 2022(c)
+# 2023(c)
 # 
 
 """
 GaAs components with 'Fab6' process
-(c) Michael Nickerson 2022
+(c) Michael Nickerson 2023
 """
 
 # Allow import of sibling packages
