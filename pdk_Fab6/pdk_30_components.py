@@ -450,11 +450,12 @@ def segmentSDT(wTR0=None, wTR1=6.5, wShallow=3, wDeep=2,
 
 
 ## Gain-coupled active region grating cell; no vias or contacts
-def segmentGCDFB(order=4, w=None, nA=3.4420, nB=3.4402, l0=1.03, instantiate=True):
+def segmentGCDFB(order=4, w=None, bias=0.48, 
+                 nA=3.4469, nB=3.4402, l0=1.03, instantiate=True):
     """Gain-coupled active region grating cell; no vias or contacts."""
     # Verify inputs
     w = icActive._getwidth(None, w, 'wgPassive')
-    nA = 3.4420 if nA is None else nA
+    nA = 3.4469 if nA is None else nA
     nB = 3.4402 if nB is None else nB
     
     # Name and deduplicate
@@ -464,8 +465,8 @@ def segmentGCDFB(order=4, w=None, nA=3.4420, nB=3.4402, l0=1.03, instantiate=Tru
     
     # Calculate parameters
     d = (order + 1/2)*l0 * 2/(nA + nB)
-    dA = round(0.5*d, 5)
-    dB = round(0.5*d, 5)
+    dA = round(bias*d, 5)
+    dB = round((1-bias)*d, 5)
     
     with nazca.Cell(instantiate=False) as segment:
         a0 = nazca.Pin(name='a0', xs='wgActive', type='opt').put(0, 0, 180)
@@ -483,7 +484,8 @@ def segmentGCDFB(order=4, w=None, nA=3.4420, nB=3.4402, l0=1.03, instantiate=Tru
 
 
 ## Vertically-coupled deep-ridge DBR unit cell
-def segmentVCDBR(order=4, w=None, nA=3.4241, nB=3.4157, l0=1.03, instantiate=True):
+def segmentVCDBR(order=5, w=None, bias=0.48, 
+                 nA=3.4241, nB=3.4157, l0=1.03, instantiate=True):
     """Vertically-coupled deep-ridge DBR unit cell"""
     # Verify inputs
     w = icPassive._getwidth(None, w, 'wgPassive')
@@ -497,8 +499,8 @@ def segmentVCDBR(order=4, w=None, nA=3.4241, nB=3.4157, l0=1.03, instantiate=Tru
     
     # Calculate parameters
     d = (order + 1/2)*l0 * 2/(nA + nB)
-    dA = round(0.52*d, 5)
-    dB = round(0.48*d, 5)
+    dA = round(bias*d, 5)
+    dB = round((1-bias)*d, 5)
     
     with nazca.Cell(name=name, instantiate=instantiate) as segment:
         icPassive.strt(width=w, length=dA + dB, arrow=False).put(0, drc=False).raise_pins(['a0', 'b0'])
@@ -513,8 +515,9 @@ def segmentVCDBR(order=4, w=None, nA=3.4241, nB=3.4157, l0=1.03, instantiate=Tru
 
 
 ## Laterally-coupled shallow-rib DBR unit cell
-def segmentLCDBR(order=4, wA=wgShallow.pedestal, wB=6, nA=3.4402, nB=3.4383, l0=1.03, 
-                 neff=lambda w: -0.0714*(w**-1.957) + 3.4404, instantiate=True):
+def segmentLCDBR(order=3, wA=wgShallow.pedestal, wB=6, bias=0.48, 
+                 nA=3.4469, nB=3.4464, l0=1.03, 
+                 neff=lambda w: -0.0611*(w**-2.65) + 3.447, instantiate=True):
     """Laterally-coupled shallow-rib DBR unit cell."""
     # If neff lambda provided, use it to recalculate n1 and n2
     if callable(neff):
@@ -522,8 +525,8 @@ def segmentLCDBR(order=4, wA=wgShallow.pedestal, wB=6, nA=3.4402, nB=3.4383, l0=
         nB = round(neff(wB), 6)
     
     # Verify inputs
-    nA = 3.4402 if nA is None else nA
-    nB = 3.4383 if nB is None else nB
+    nA = 3.4469 if nA is None else nA
+    nB = 3.4464 if nB is None else nB
     
     # Name and deduplicate
     name = 'SegmentLCDBR.'+str([order, wA, nA, wB, nB, l0])
@@ -532,8 +535,8 @@ def segmentLCDBR(order=4, wA=wgShallow.pedestal, wB=6, nA=3.4402, nB=3.4383, l0=
     
     # Calculate parameters
     d = (order + 1/2)*l0 * 2/(nA + nB)
-    dA = round(0.48*d, 5)
-    dB = round(0.52*d, 5)
+    dA = round(bias*d, 5)
+    dB = round((1-bias)*d, 5)
     
     with nazca.Cell(instantiate=False) as segment:
         icShallow.strt(length=dA+dB, arrow=False).\
