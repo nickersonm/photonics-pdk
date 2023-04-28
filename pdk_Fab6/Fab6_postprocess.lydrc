@@ -121,7 +121,7 @@ dieMax = input(L_DieReserved)
 
 ## Full-isolation etch experimental layer
 # Exclude known process testing marks
-excludeRegion = (extent("markResolution")+extent("LayerLabels*")+extent("markVernier")+extent("markDEKTAK")+extent("markTLM*")+extent("ResolutionBlockSet*")+extent("Vernier*"))
+excludeRegion = (extent("markResolution")+extent("LayerLabels*")+extent("markVernier")+extent("markDEKTAK")+extent("markTLM*")+extent("text_*")+extent("TLM.*")+extent("ResolutionBlockSet*")+extent("Vernier*")).merge
 excludeRegion = excludeRegion.size(5.um).merge
 
 # Assemble isolation area by removing extended via regions
