@@ -14,8 +14,6 @@ FP waveguide test for phase modulation coefficient extraction
 """
 
 ## Includes and aliases
-from datetime import datetime
-
 import nazca
 import marks_NanoFab as marks
 import pdk_Fab6 as PDK
@@ -35,7 +33,7 @@ dieSize = [[0,0], [None, 2.50e3]]   # Simple FP waveguide tests
 dieSize[1][0] = dieSize[1][1]*2 - 200   # Adjust for test markings
 modLen = 1000   # Typical modulator length
 wgSpace = PDK.contactWidth + PDK.metalBuffer # Waveguide spacing
-wgOverlap = PDK.cleaveWidth*2  # Overlap between subdies, 1/2 space between cleaving lines, and general inset
+wgOverlap = PDK.cleaveWidth*1.5  # Overlap between subdies, 1/2 space between cleaving lines, and general inset
 
 
 
@@ -129,80 +127,91 @@ with nazca.Cell('FP Tests') as groupFP:
 
 
 ### Assemble die
-with nazca.Cell(instantiate=True, name=dieName) as die:
-    ## Utility marks
-    # Die outline for lightfield and darkfield
-    marks.utility.die(dieSize).put(0,0)
-    marks.utility.die(dieSize, layer=1005, grow=200).put(0,0)
+def die(dieName=dieName):
+    # Deduplicate
+    if dieName in nazca.cfg.cellnames.keys():
+        return nazca.cfg.cellnames[dieName]
     
-    # Corner marks
-    marks.fCommon.putCorners(PDK.markCorner.remove_layer(['ProtectRidge']), diesize=dieSize, inset=[0,0], flip=True, flop=True)
-    
-    # MLA150 alignment marks in explicit locations
-    for x in [dieSize[0][0]+150, dieSize[1][1]-150]:
-        for y in [dieSize[1][1]-150]:
-            marks.mla150.AlignHighMag(layer=['ProtectRegrowth', 'ProtectRidge']).put(x,y)
-            nazca.netlist.Annotation(layer='Annotation', 
-                                     text=( 'Align: %.0f, %.0f' % (x,y) )).put(x,y)
-    
-    # Stepper2 DFAS marks in explicit locations
-    for x in [dieSize[0][0]+350, dieSize[1][1]-350]:
-        for y in [dieSize[1][1]-150]:
-            marks.stepper2.LocalAlign(layer=['ProtectRidge']).put(x,y)
-            nazca.netlist.Annotation(layer='Annotation', 
-                                     text=( 'Align: %.0f, %.0f' % (x,y) )).put(x,y)
-    
-    # Custom reduced-layer resolution tests and verniers in top left
-    PDK.cellArray([marks.utility.ResolutionBlockSet(xs_pattern='ProtectRidge'), 
-                   marks.utility.ResolutionBlockSet(xs_pattern='EtchRib',  xs_background='ProtectRidge'), 
-                   marks.utility.ResolutionBlockSet(xs_pattern='EtchIso',  xs_background='ProtectRidge'), 
-                   marks.utility.ResolutionBlockSet(xs_pattern='MetalVia', xs_background='ProtectRidge'), 
-                   marks.utility.ResolutionBlockSet(xs_pattern='MetalTop', xs_background='ProtectRidge', 
-                                                    res=[0.8, 1.0, 1.2, 1.4, 1.6, 1.8]), 
-                   marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='EtchRib'),
-                   marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='EtchIso'),
-                   marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='MetalVia'),
-                   marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='MetalTop'),
-                   marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='CleaveLane'),
-                   marks.utility.LayerLabels(layers=[1,2,4, 5])],
-                  space=20, nx=12).put(dieSize[1][1]/2, dieSize[1][1]-150)
-    
-    
-    ## Place test structures horizontal and vertical with separate labels
-    x, y = 0, 0
-    for rot in [0, 90]:
-        nazca.cp.goto(x, y, rot)
-        nazca.cp.shift(0, 50 + 50)
-        groupFP.put()
+    with nazca.Cell(instantiate=True, name=dieName) as die:
+        ## Utility marks
+        # Die outline for lightfield and darkfield
+        marks.utility.die(dieSize).put(0,0)
+        marks.utility.die(dieSize, layer=1005, grow=100).put(0,0)
         
-        # Labels
-        nazca.cp.shift(75, -50)
-        marks.utility.label(text=dieName + f' / {str(rot)} deg', height=50, layer=['MetalTop'], 
-                            grow=[0], date=True, origin=['lower', 'left']).put()
-        x += dieSize[1][0]
-    
-    
-    ## Facet cleave lanes
-    # Vertical
-    PDK.icCleave.strt(length=dieSize[1][1] + wgOverlap*2, arrow=False).put(wgOverlap/2, -wgOverlap, 90)
-    PDK.icCleave.strt(length=dieSize[1][1] + wgOverlap*2, arrow=False).put(dieSize[1][1] - wgOverlap/2, -wgOverlap, 90)
-    PDK.icCleave.strt(length=dieSize[1][1] + wgOverlap*2, arrow=False).put(dieSize[1][0] - wgOverlap/2, -wgOverlap, 90)
-    
-    # Horizontal
-    PDK.icCleave.strt(length=dieSize[1][0] + wgOverlap*2, arrow=False).put(-wgOverlap, wgOverlap/2, 0)
-    PDK.icCleave.strt(length=dieSize[1][0] + wgOverlap*2, arrow=False).put(-wgOverlap, dieSize[1][1]-wgOverlap/2, 0)
+        # Corner marks
+        marks.fCommon.putCorners(PDK.markCorner.remove_layer(['ProtectRidge']), diesize=dieSize, inset=[0,0], flip=True, flop=True)
+        
+        # MLA150 alignment marks in explicit locations
+        for x in [dieSize[0][0]+150, dieSize[1][1]-150]:
+            for y in [dieSize[1][1]-150]:
+                marks.mla150.AlignHighMag(layer=['ProtectRegrowth', 'ProtectRidge']).put(x,y)
+                nazca.netlist.Annotation(layer='Annotation', 
+                                        text=( 'Align: %.0f, %.0f' % (x,y) )).put(x,y)
+        
+        # Stepper2 DFAS marks in explicit locations
+        for x in [dieSize[0][0]+350, dieSize[1][1]-350]:
+            for y in [dieSize[1][1]-150]:
+                marks.stepper2.LocalAlign(layer=['ProtectRidge']).put(x,y)
+                nazca.netlist.Annotation(layer='Annotation', 
+                                        text=( 'Align: %.0f, %.0f' % (x,y) )).put(x,y)
+        
+        # Custom reduced-layer resolution tests and verniers in top left
+        PDK.cellArray([marks.utility.ResolutionBlockSet(xs_pattern='ProtectRidge'), 
+                    marks.utility.ResolutionBlockSet(xs_pattern='EtchRib',  xs_background='ProtectRidge'), 
+                    marks.utility.ResolutionBlockSet(xs_pattern='EtchIso',  xs_background='ProtectRidge'), 
+                    marks.utility.ResolutionBlockSet(xs_pattern='MetalVia', xs_background='ProtectRidge'), 
+                    marks.utility.ResolutionBlockSet(xs_pattern='MetalTop', xs_background='ProtectRidge', 
+                                                        res=[0.8, 1.0, 1.2, 1.4, 1.6, 1.8]), 
+                    marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='EtchRib'),
+                    marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='EtchIso'),
+                    marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='MetalVia'),
+                    marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='MetalTop'),
+                    marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='CleaveLane'),
+                    marks.utility.LayerLabels(layers=[1,2,4, 5])],
+                    space=20, nx=12).put(dieSize[1][1]/2, dieSize[1][1]-150)
+        
+        
+        ## Place test structures horizontal and vertical with separate labels
+        x, y = 0, 0
+        for rot in [0, 90]:
+            nazca.cp.goto(x, y, rot)
+            nazca.cp.shift(0, 50 + 50)
+            groupFP.put()
+            
+            # Labels
+            nazca.cp.shift(75, -50)
+            marks.utility.label(text=dieName + f' / {str(rot)} deg', height=50, layer=['MetalTop'], 
+                                grow=[0], date=True, origin=['lower', 'left']).put()
+            x += dieSize[1][0]
+        
+        
+        ## Facet cleave lanes
+        # Vertical
+        PDK.icCleave.strt(length=dieSize[1][1] + wgOverlap*2, arrow=False).put(wgOverlap/2, -wgOverlap, 90)
+        PDK.icCleave.strt(length=dieSize[1][1] + wgOverlap*2, arrow=False).put(dieSize[1][1] - wgOverlap/2, -wgOverlap, 90)
+        PDK.icCleave.strt(length=dieSize[1][1] + wgOverlap*2, arrow=False).put(dieSize[1][0] - wgOverlap/2, -wgOverlap, 90)
+        
+        # Horizontal
+        PDK.icCleave.strt(length=dieSize[1][0] + wgOverlap*2, arrow=False).put(-wgOverlap, wgOverlap/2, 0)
+        PDK.icCleave.strt(length=dieSize[1][0] + wgOverlap*2, arrow=False).put(-wgOverlap, dieSize[1][1]-wgOverlap/2, 0)
+    return die
 
 
 ## Generate GDS
-from datetime import datetime
-dieFile = dieName + '_' + datetime.now().strftime('%Y%m%d') + '.gds'
-nazca.export_gds(topcells=die, filename=dieFile, clear=False)
+def makeGDS(dieName=dieName, die=die):
+    from datetime import datetime
+    dieFile = '.\\Process_Tests\\' + dieName + '_' + datetime.now().strftime('%Y%m%d') + '.gds'
+    nazca.export_gds(topcells=die, filename=dieFile, clear=False)
+    
+    # Postprocess with KLayout
+    print('Postprocessing with KLayout...')
+    from subprocess import call
+    from os.path import abspath
+    postDRC = [abspath('..\\..\\..\\..\\Code\\Process and Layout\\nazca\\pdk_Fab6\\Fab6_postprocess.lydrc'),
+               abspath('..\\..\\..\\..\\Code\\Process and Layout\\nazca\\pdk_Fab6\\Fab6_postprocess_merge.lydrc')]
+    for drc in postDRC:
+        call(['C:\\Utilities\\EDA\\KLayout\\klayout_app.exe', '-b', '-r', drc, '-rd', 'input='+abspath(dieFile)])
 
-# Postprocess with KLayout
-print('Postprocessing with KLayout...')
-from subprocess import call
-from os.path import abspath
-postDRC = [abspath('..\\pdk_Fab6\\Fab6_postprocess.lydrc'),
-           abspath('..\\pdk_Fab6\\Fab6_postprocess_merge.lydrc')]
-for drc in postDRC:
-    call(['klayout_app.exe', '-b', '-r', drc, '-rd', 'input='+abspath(dieFile)])
+if __name__ == '__main__':
+    makeGDS(dieName + ", #000.00", die(dieName + ", #000.00"))
+
