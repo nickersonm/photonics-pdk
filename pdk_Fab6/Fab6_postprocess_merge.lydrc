@@ -27,7 +27,7 @@ if not $input
   error("No input specified")
 end
 
-# log_file('drc.log')
+#log_file('drc.log')
 
 # engine setup
 flat
@@ -36,17 +36,48 @@ verbose(true)
 
 
 ## Set target and load
-target(File.dirname($input) + "/" + File.basename($input, ".*") + "_merged.oas")
-source(File.dirname($input) + "/" + File.basename($input, ".*") + ".oas")
+log("checking for input")
+if File.exist?(File.dirname($input) + "/" + File.basename($input, ".*") + ".oas")
+  log("loading '" + File.dirname($input) + "/" + File.basename($input, ".*") + ".oas'")
+  source(File.dirname($input) + "/" + File.basename($input, ".*") + ".oas")
+elsif File.exist?($input)
+  log("loading '" + $input + "'")
+  source($input)
+else
+  log("'"+$input+"' doesn't exist!")
+  error("'"+$input+"' doesn't exist!")
+end
+
+# Preprocessing operations
+l_out = layers.map { |l| l.layer }.sort
+
+# Perform inversion operations on input: layer = layer - [10k+layer] + ([10k+layer] - layer)
+l_out.select {|l| (l &gt;= 10e3) }.each do |l|
+  log("processing layer #{l} inversion")
+  l0 = Integer(l - 10e3)
+  L  = input(l)
+  L0 = input(l0)
+  (L0 - L + (L - L0)).output(l0)
+  polygons.output(l) # Clear the layer
+  L.forget
+  L0.forget
+  log("completed layer #{l} inversion")
+end
 
 # Output flattened and merged layers
-layers.map { |l| l.layer }.sort.each { |l| input(l).flatten.size(1e-3.um).merge.size(-1e-3).smoothed(5e-3.um, true).output(l) unless input(l).count == 0 }
-layers.map { |l| l.layer }.sort.each { |l| input(l, 1).flatten.size(1e-3.um).merge.size(-1e-3).smoothed(5e-3.um, true).output(l, 1) unless input(l, 1).count == 0 }
+log("flattening and outputting remaining layers")
+target(File.dirname($input) + "/" + File.basename($input, ".*") + "_merged.oas")
+#layers.map { |l| l.layer }.sort.each { |l| input(l).flatten.size(1e-3.um).merge.size(-1e-3).smoothed(5e-3.um, true).output(l) unless input(l).count == 0 }
+#layers.map { |l| l.layer }.sort.each { |l| input(l, 1).flatten.size(1e-3.um).merge.size(-1e-3).smoothed(5e-3.um, true).output(l, 1) unless input(l, 1).count == 0 }
+l_out.select {|l| (l &lt; 10e3) }.sort.each do |l|
+  input(l).flatten.size(1e-3.um).merge.size(-1e-3).smoothed(5e-3.um, true).output(l) unless input(l).count == 0
+  input(l,1).flatten.size(1e-3.um).merge.size(-1e-3).smoothed(5e-3.um, true).output(l,1) unless input(l,1).count == 0
+end
 
-log("Write target")
-target(RBA::Layout::new)
+# Save
+log("Write output")
+source.layout.write(File.dirname($input) + "/" + File.basename($input, ".*") + "_merged.oas")
 log("Done")
-
 
 </text>
 </klayout-macro>

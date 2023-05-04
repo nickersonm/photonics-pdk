@@ -27,7 +27,7 @@ if not $input
   error("No input specified")
 end
 
-# log_file('drc.log')
+#log_file('drc.log')
 
 # engine setup
 deep
@@ -41,7 +41,7 @@ source($input)
 l_out = layers.map { |l| l.layer }.sort
 
 # Perform inversion operations on input: layer = layer - [10k+layer] + ([10k+layer] - layer)
-l_out.select {|l| (l >= 10e3) }.each do |l|
+l_out.select {|l| (l &gt;= 10e3) }.each do |l|
   log("processing layer #{l} inversion")
   l0 = Integer(l - 10e3)
   L  = input(l)
@@ -50,6 +50,7 @@ l_out.select {|l| (l >= 10e3) }.each do |l|
   polygons.output(l) # Clear the layer
   L.forget
   L0.forget
+  log("completed layer #{l} inversion")
 end
 
 
@@ -75,9 +76,11 @@ L_Exclude           = 998
 L_DRC               = 999
 
 # Cleave lanes
+log("processing cleave lanes")
 input(L_CleaveLane).not(input(L_CleaveKeepaway)).output(L_CleaveLane)
 
 # Top metal
+log("processing top metal")
 metalTop = input(L_MetalTop) - (input(L_MetalKeepaway) - input(L_CleaveKeepaway))
 metalTop.output(L_MetalTop)
 
@@ -92,36 +95,43 @@ polygons.output(L_CleaveKeepaway)
 #   https://www.klayout.de/forum/discussion/2162/automating-the-untilities-fill-tool-in-ruby
 # Works best in 'flat' mode
 fillsize = 30.um  # Square edge length for fill region
+cleavebuffer = 10.um # Don't fill within this much of cleave lanes
 fillbuffer = 40.um # Don't fill within this much of any real layers
 fillfrac = 0.5    # Fraction to fill by area
 fillRidge = fill_pattern("FillRidge").shape(L_ProtectRidge, box(fillsize*(fillfrac**0.5))).origin(-fillsize/2, -fillsize/2)
 fillMetal = fill_pattern("FillMetal").shape(L_MetalTop, box(fillsize*(fillfrac**0.5)-4)).origin(-fillsize/2, -fillsize/2)
 
 # Assemble layer numbers to exclude, except for DieArea and DieReserved
-l_exclude = (layers.map { |l| l.layer }.sort.uniq).select {|l| !input(l).is_empty?} - [L_DieArea, L_DieReserved]
-# log("Exclude: " + l_exclude.to_s)
+l_exclude = (layers.map { |l| l.layer }.sort.uniq).select {|l| !input(l).is_empty?} - [L_DieArea, L_DieReserved, L_CleaveLane]
+log("fill exclude: " + l_exclude.to_s)
 
 # Exclude known process testing marks
+log("merging fill-exclude regions")
 excludeRegion = (extent("markResolution")+extent("LayerLabels*")+extent("markVernier")+extent("markDEKTAK")+extent("markTLM*")+extent("text_*")+extent("ResolutionBlockSet*")+extent("Vernier*")).merge
 
 # Assemble fill area by removing excluded regions and perform fill
+log("assembling fill area")
 fillArea = input(L_DieArea).size(fillbuffer) - excludeRegion.sized(fillbuffer)
 l_exclude.each { |l| fillArea -= (input(l) - excludeRegion).sized(fillbuffer) }
+fillArea -= (input(L_CleaveLane) - excludeRegion).sized(cleavebuffer) # Reduced exclusion for cleave lanes
 fillArea.merge.output(L_Exclude)
+log("adding fill")
 fillArea.fill(fillRidge, hstep(fillsize), vstep(fillsize), auto_origin)
 fillArea.fill(fillMetal, hstep(fillsize), vstep(fillsize), auto_origin)
 excludeRegion.forget
 
 
 ## Inversions; needs 'flat' mode
+log("performing selected layer inversions")
 flat
 dieMax = input(L_DieReserved)
 [L_MetalTop, L_ProtectRidge, L_ProtectRegrowth].each { |l| (dieMax - input(l)).output(l+100) }
 
 
 ## Full-isolation etch experimental layer
+log("adding full-isolation etch")
 # Exclude known process testing marks
-excludeRegion = (extent("markResolution")+extent("LayerLabels*")+extent("markVernier")+extent("markDEKTAK")+extent("markTLM*")+extent("text_*")+extent("TLM.*")+extent("ResolutionBlockSet*")+extent("Vernier*")).merge
+excludeRegion = (extent("markResolution")+extent("LayerLabels*")+extent("markVernier")+extent("markDEKTAK")+extent("markTLM*")+extent("ResolutionBlockSet*")+extent("Vernier*"))
 excludeRegion = excludeRegion.size(5.um).merge
 
 # Assemble isolation area by removing extended via regions
@@ -145,7 +155,7 @@ modSep = 20.um
 metalSep = 15.um
 
 # Exclude known process testing marks
-excludeRegion = (extent("markResolution")+extent("LayerLabels*")+extent("markVernier")+extent("markDEKTAK")+extent("markTLM*")+extent("text_*")+extent("ResolutionBlockSet*")+extent("Vernier*")).merge
+excludeRegion = (extent("markResolution")+extent("LayerLabels*")+extent("markVernier")+extent("markDEKTAK")+extent("markTLM*")+extent("text_*")+extent("TLM.*")+extent("ResolutionBlockSet*")+extent("Vernier*")).merge
 
 # Modulator checks from metal via
 drcModulator = (input(L_MetalVia) - excludeRegion).size(0.75.um).size(minsize-0.75.um).size(-minsize)
