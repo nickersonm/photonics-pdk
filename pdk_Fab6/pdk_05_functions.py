@@ -31,6 +31,7 @@ taperLen = lambda w1, w2 : round(abs(w2-w1)*30, 1)
 
 # Flip a cell
 nazca.Cell.flip = lambda self : cellFlipPins(self)
+nazca.Cell.reverse = nazca.Cell.flip
 """Flip a cell with `nazca.cell.flip`."""
 
 # Change a cell name
