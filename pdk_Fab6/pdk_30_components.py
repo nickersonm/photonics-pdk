@@ -692,7 +692,7 @@ def componentMMI(N=2, dwMMI=None, dlMMI=None, wMMI=None, lMMI=None,
         dlMMI = 0
     lMMI = lMMI + dlMMI
     
-    y = [wMMI * (2*i - (N-1)) / (2*N) for i in range(0,N)]
+    y = [wMMI * (2*i - (N-1)) / (2*N) for i in range(N)]
     
     # Name and deduplicate
     name = f'MMI.{xs}' + '.1x%i.[%.3g, %.3g, %.3g, %.3g, %.3g]' % (N, wMMI, lMMI, taperIn, taperOut, nr/l0)
@@ -725,7 +725,7 @@ def componentMMI(N=2, dwMMI=None, dlMMI=None, wMMI=None, lMMI=None,
                                     arrow=False).put(0, yi)
                 nazca.connect_optical_path(pinend, pi.pinin, 0, sigtype='opt')
                 pi.raise_pins(namesin=['b0'], namesout=['b'+str(i)])
-        outTapers.put(pinend, drc=None).raise_pins(namesin=['b'+str(i) for i in range(0,N)])
+        outTapers.put(pinend, drc=None).raise_pins(namesin=['b'+str(i) for i in reversed(range(0,N))])
         
         # Draw pins
         if arrow:
@@ -789,7 +789,7 @@ def componentMMI22(dwMMI=None, dlMMI=None, wMMI=None, lMMI=None,
         dlMMI = 0
     lMMI = lMMI + dlMMI
     
-    y = [wMMI * (2*i - (N-1)) / (2*N) for i in range(0,N)]
+    y = [wMMI * (2*i - (N-1)) / (2*N) for i in range(N)]
     
     # Name and deduplicate
     name = f'MMI.{xs}' + '.2x2.[%.3g, %.3g, %.3g, %.3g, %.3g]' % (wMMI, lMMI, taperIn, taperOut, nr/l0)
@@ -827,7 +827,7 @@ def componentMMI22(dwMMI=None, dlMMI=None, wMMI=None, lMMI=None,
                                     arrow=False).put(0, yi)
                 nazca.connect_optical_path(pinend, pi.pinin, 0, sigtype='opt')
                 pi.raise_pins(namesin=['b0'], namesout=['b'+str(i)])
-        outTapers.put(pinend, drc=None).raise_pins(namesin=['b'+str(i) for i in range(0,N)])
+        outTapers.put(pinend, drc=None).raise_pins(namesin=['b'+str(i) for i in reversed(range(N))])
         
         # Draw pins
         if arrow:
@@ -1062,7 +1062,7 @@ def componentFan(N=2, pitchin=4, pitchout=127,
         return nazca.cfg.cellnames[name]
     
     # Calculate parameters
-    y = [(2*i - (N-1)) / (2*N) for i in range(0,N)]
+    y = [(2*i - (N-1)) / (2*N) for i in range(N)]
     length = ceil( sinebend_minlen(dy=(max(y) * N * abs(pitchout-pitchin)), radius=radius) )
     
     with nazca.Cell(instantiate=False) as component:

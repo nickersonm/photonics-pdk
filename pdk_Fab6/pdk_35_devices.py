@@ -71,7 +71,7 @@ def deviceMMI(N=2, pitch=contactWidth + metalBuffer, radius=None,
         componentFan(N=N, radius=radius, xs=xs, 
                      pitchin=abs(mmi.pin['b0'].y - mmi.pin['b1'].y), 
                      pitchout=pitch, arrow=False).put().\
-                         raise_pins(['b'+str(i) for i in range(N)])
+                         raise_pins(['b'+str(i) for i in reversed(range(N))])
         
         # Draw pins
         if arrow:
@@ -116,11 +116,11 @@ def deviceMMI22(pitch=contactWidth + metalBuffer, radius=None,
                      pitchin=pitch, 
                      pitchout=abs(mmi.pin['b0'].y - mmi.pin['b1'].y), 
                      arrow=False).put('b0', mmi.pinin).\
-                         raise_pins(['a'+str(i) for i in range(N)])
+                         raise_pins(['a'+str(i) for i in reversed(range(N))])
         componentFan(N=N, radius=radius, xs=xs, 
                      pitchin=abs(mmi.pin['b0'].y - mmi.pin['b1'].y), 
                      pitchout=pitch, arrow=False).put(mmi.pinout).\
-                         raise_pins(['b'+str(i) for i in range(N)])
+                         raise_pins(['b'+str(i) for i in reversed(range(N))])
         
         # Draw pins
         if arrow:
@@ -172,13 +172,13 @@ def deviceMMI_tree(N=2, k=3, pitch=contactWidth + metalBuffer, radius=None,
                       dW=dW, dL=dL, straight=straight, xs=xs, arrow=False).put()
         
         # Place sub-trees
-        for i in range(N):
+        for i in reversed(range(N)):
             deviceMMI_tree(N=N, k=(k-1), pitch=pitch, radius=radius, nr=nr, 
                            straight=straight, dW=dW, dL=dL, xs=xs, arrow=False).\
                 put(m.pin['b'+str(i)]).\
                     raise_pins(
-                        namesin=['b'+str(j) for j in range(N**(k-1))],
-                        namesout=['b'+str(N**(k-1)*i + j) for j in range(N**(k-1))]
+                        namesin=['b'+str(j) for j in reversed(range(N**(k-1)))],
+                        namesout=['b'+str(N**(k-1)*i + j) for j in reversed(range(N**(k-1)))]
                     )
         
         # Draw pins
@@ -368,7 +368,7 @@ def devicePMArray(length=2000, pitch=contactWidth + metalBuffer, radius=None,
                            straight=10, arrow=False, xs=xs).put()
         m.raise_pins(['a0'])
         
-        for i in range(N**k):
+        for i in reversed(range(N**k)):
             # Get specific ploc
             if not hasattr(ploc, '__iter__'):
                 loc = ploc
@@ -405,7 +405,7 @@ def devicePMArray(length=2000, pitch=contactWidth + metalBuffer, radius=None,
         if outputpitch is not None:
             F = componentFan(N=N**k, pitchin=pitch, pitchout=outputpitch, 
                              radius=radius, xs=xs, arrow=False)
-            FP = F.put(flip=True)
+            FP = F.put()
             
             # SOA if soacleave
             if soa > 0 and soacleave:
@@ -413,7 +413,7 @@ def devicePMArray(length=2000, pitch=contactWidth + metalBuffer, radius=None,
                 soacleavelen = max([cleaveWidth*1.5, soacleavelen - FP.pin['b'+str(i)].x])
                 
                 # Separation for output cleave
-                C = [ic.strt(length=soacleavelen + 1.5*cleaveWidth, arrow=False).put(FP.pin['b'+str(i)]) for i in range(N**k)]
+                C = [ic.strt(length=soacleavelen + 1.5*cleaveWidth, arrow=False).put(FP.pin['b'+str(i)]) for i in reversed(range(N**k))]
                 nazca.Pin(name='c0', xs=None).put(C[0].pinin.x + soacleavelen, 0, 0)    # Cleave-center pin
                 
                 # Fan-out again
@@ -421,7 +421,7 @@ def devicePMArray(length=2000, pitch=contactWidth + metalBuffer, radius=None,
                                   radius=radius, xs=xs, arrow=False).put()
                 
                 # Place SOAs
-                for i in range(N**k):
+                for i in reversed(range(N**k)):
                     # Get specific ploc
                     if not hasattr(ploc, '__iter__'):
                         loc = ploc
@@ -433,7 +433,7 @@ def devicePMArray(length=2000, pitch=contactWidth + metalBuffer, radius=None,
                         put(FP.pin['b'+str(i)]).raise_pins(namesin=['p0', 'p1'], namesout=['ap'+str(i), 'ap'+str(N**k + i)])
                 
                 # Fan-in again
-                FP = F.put(flip=True)
+                FP = F.put()
             
             # Raise the piuns for the output fan
             FP.raise_pins(namesin=['b'+str(i) for i in range(N**k)])
