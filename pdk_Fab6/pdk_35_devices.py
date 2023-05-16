@@ -510,7 +510,7 @@ def deviceSOA(length=500, ploc=0.5,
 
 
 ## DFB laser of specified type
-def deviceDFB(type='GC', order=5, 
+def deviceDFB(type='GC', order=9, 
               length=1500, rfrac=0.3, 
               plen=[1], l0=1.03, d0=3.25, 
               xs2='wgPassive', w2=None, 
@@ -606,7 +606,7 @@ def deviceDFB(type='GC', order=5,
 
 
 ## DBR laser of specified type
-def deviceDBR(type='VC', order=5, 
+def deviceDBR(type='VC', order=9, 
               gratinglength=600, rfrac=0.30, 
               activelength=500, ploc=0.5, l0=1.03,
               arrow=True, instantiate=True):
@@ -676,7 +676,7 @@ def deviceDBR(type='VC', order=5,
 
 
 ## Corner-cube + DBR laser of specified type
-def deviceCCDBR(type='VC', order=5, passivelength=cleaveWidth*3, 
+def deviceCCDBR(type='VC', order=9, passivelength=cleaveWidth*3, 
                 gratinglength=300, activelength=500, 
                 ploc=0.5, l0=1.03, xsCC='wgShallow', 
                 arrow=True, instantiate=True):
