@@ -450,7 +450,7 @@ def segmentSDT(wTR0=None, wTR1=6.5, wShallow=3, wDeep=2,
 
 
 ## Gain-coupled active region grating cell; no vias or contacts
-def segmentGCDFB(order=4, w=None, bias=0.48, 
+def segmentGCDFB(order=5, w=None, bias=0.48, 
                  nA=3.4469, nB=3.4402, l0=1.03, instantiate=True):
     """Gain-coupled active region grating cell; no vias or contacts."""
     # Verify inputs
@@ -515,7 +515,7 @@ def segmentVCDBR(order=5, w=None, bias=0.48,
 
 
 ## Laterally-coupled shallow-rib DBR unit cell
-def segmentLCDBR(order=3, wA=wgShallow.pedestal, wB=6, bias=0.48, 
+def segmentLCDBR(order=5, wA=wgShallow.pedestal, wB=6, bias=0.48, 
                  nA=3.4469, nB=3.4464, l0=1.03, 
                  neff=lambda w: -0.0611*(w**-2.65) + 3.447, instantiate=True):
     """Laterally-coupled shallow-rib DBR unit cell."""
