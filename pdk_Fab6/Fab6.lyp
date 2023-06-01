@@ -118,6 +118,12 @@
   <frame-color>#599fd7</frame-color>
  </properties>
  <properties>
+  <name>14/0 Alignment</name>
+  <source>14/0@1</source>
+  <fill-color>#AA336A</fill-color>
+  <frame-color>#AA336A</frame-color>
+ </properties>
+ <properties>
   <name>1001/0 Die Area</name>
   <source>1001/0@1</source>
   <fill-color>#d3bd55</fill-color>

@@ -90,9 +90,9 @@ metalP.pinstyle = 'metal'
 # Verniers
 with nazca.Cell(name='markVernier') as markVernier:
     """Vernier array for all relevant layers"""
-    cellArray([marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='ProtectRegrowth'),
+    cellArray([marks.utility.Vernier(xs_center='AlignmentMark', xs_surround='ProtectRegrowth'),
                marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='EtchRib'),
-               marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='EtchIso'),
+               marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='AlignmentMark'),
                marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='MetalVia'),
                marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='MetalTop')],
               space=20, nx=10).\
@@ -145,7 +145,7 @@ with nazca.Cell(name='dieCorner') as markCorner:
     marks.utility.layerPolygon(
         poly=[(0, 0), (100, 0), (100, 10),
               (10, 10), (10, 100), (0, 100)], 
-        layers=['ProtectRegrowth', 'ProtectRidge']).put(0, 0)
+        layers=['ProtectRegrowth', 'ProtectRidge', 'AlignmentMark']).put(0, 0)
 
 
 
@@ -450,7 +450,7 @@ def segmentSDT(wTR0=None, wTR1=6.5, wShallow=3, wDeep=2,
 
 
 ## Gain-coupled active region grating cell; no vias or contacts
-def segmentGCDFB(order=9, w=None, bias=0.48, 
+def segmentGCDFB(order=9, w=None, bias=0.50, 
                  nA=3.4469, nB=3.4402, l0=1.03, instantiate=True):
     """Gain-coupled active region grating cell; no vias or contacts."""
     # Verify inputs
@@ -464,7 +464,7 @@ def segmentGCDFB(order=9, w=None, bias=0.48,
         return nazca.cfg.cellnames[name]
     
     # Calculate parameters
-    d = order*l0 * 2/(nA + nB)
+    d = (order/2)*l0 * 2/(nA + nB)
     dA = round(bias*d, 5)
     dB = round((1-bias)*d, 5)
     
@@ -498,7 +498,7 @@ def segmentVCDBR(order=9, w=None, bias=0.48,
         return nazca.cfg.cellnames[name]
     
     # Calculate parameters
-    d = order*l0 * 2/(nA + nB)
+    d = (order/2)*l0 * 2/(nA + nB)
     dA = round(bias*d, 5)
     dB = round((1-bias)*d, 5)
     
@@ -534,7 +534,7 @@ def segmentLCDBR(order=9, wA=wgShallow.pedestal, wB=6, bias=0.48,
         return nazca.cfg.cellnames[name]
     
     # Calculate parameters
-    d = order*l0 * 2/(nA + nB)
+    d = (order/2)*l0 * 2/(nA + nB)
     dA = round(bias*d, 5)
     dB = round((1-bias)*d, 5)
     

@@ -44,6 +44,9 @@ nazca.add_layer(name='CleaveKeepaway', layer=12, accuracy=1e-2, \
 nazca.add_layer(name='MetalKeepaway', layer=13, accuracy=1e-2, \
     remark='Temporary metal routing exclusion layer, to be differenced with MetalTop')
 
+nazca.add_layer(name='AlignmentMark', layer=14, accuracy=1e-2, \
+    remark='Alignment marks only')
+
 # Informational layers
 nazca.add_layer(name='DieArea', layer=1001, accuracy=1e-2, \
     remark='Die Area')
