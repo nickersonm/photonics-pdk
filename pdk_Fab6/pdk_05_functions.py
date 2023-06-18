@@ -275,7 +275,7 @@ def cell_polydiff_layer(self, clip_poly, mod_layer=1001, operation='not'):
     for lay, xy in polys.items():
         # gdstk method
         if len(xy) > 0:
-            for p in gdstk.boolean(clip_poly, xy, operation, precision=1e-4):
+            for p in gdstk.boolean(xy, clip_poly, operation, precision=1e-4):
                 self._put_polygon(connect=(0,0,0),
                                   polygon=nazca.Polygon(points=p.points, layer=lay) )
         

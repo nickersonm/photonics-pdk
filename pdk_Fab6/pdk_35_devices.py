@@ -512,7 +512,7 @@ def deviceSOA(length=500, ploc=0.5,
 ## DFB laser of specified type
 def deviceDFB(type='GC', order=9, 
               length=1500, rfrac=0.3, 
-              plen=[1], l0=1.03, d0=3.25, 
+              plen=[1], l0=1.03, d0=1.0, 
               xs2='wgPassive', w2=None, 
               arrow=True, instantiate=True):
     """DFB with specified grating type.
@@ -653,13 +653,19 @@ def deviceDBR(type='VC', order=9,
         # Place unit cell as left array and right array around SOA
         if mL > 0:
             unitCell.flip().put(array=[mL, [d, 0], 1, [0, 0]])
+            if type == 'VC':
+                trPassive2Iso(length=10, xs1='wgPassive').put(0, drc=False, flop=True)
+        
         soa = deviceSOA(length=activelength, ploc=ploc, 
                         xs1='wgPassive' if mL > 0 and type != 'LC' else 'wgShallow',
                         xs2='wgPassive' if mR > 0 and type != 'LC' else 'wgShallow',
-                        arrow=False).put(mL*d)
+                        arrow=False).remove_layer('EtchIso').put(mL*d)
         soa.raise_pins(['p0', 'p1'])
+        
         if mR > 0:
             unitCell.put(array=[mR, [d, 0], 1, [0, 0]])
+            if type == 'VC':
+                trPassive2Iso(length=10, xs1='wgPassive').put(soa.pinout.x + lenR, drc=False)
         
         # Place pins
         a0 = nazca.Pin(name='a0', xs='wgPassive' if mL > 0 and type != 'LC' else 'wgShallow', type='opt').put(0, 0, 180)
@@ -726,9 +732,12 @@ def deviceCCDBR(type='VC', order=9, passivelength=cleaveWidth*3,
             nazca.interconnects.Interconnect(xs=xsCC).strt(length=passivelength, arrow=False).put()
         soa = deviceSOA(length=activelength, ploc=ploc, 
                         xs1=xsCC, xs2='wgPassive' if type != 'LC' else 'wgShallow',
-                        arrow=False).put()
+                        arrow=False).remove_layer('EtchIso').put()
         soa.raise_pins(['p0', 'p1'])
         unitCell.put(array=[m, [d, 0], 1, [0, 0]])
+        
+        if type == 'VC':
+            trPassive2Iso(length=10, xs1='wgPassive').put(soa.pinout.x + gratinglength, drc=False)
         
         # Place pins
         a0 = nazca.Pin(name='a0', xs=xsCC, type='opt').put(0, 0, 180)

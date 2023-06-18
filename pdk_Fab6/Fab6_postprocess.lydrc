@@ -107,7 +107,7 @@ log("fill exclude: " + l_exclude.to_s)
 
 # Exclude known process testing marks
 log("merging fill-exclude regions")
-excludeRegion = (extent("markResolution")+extent("LayerLabels*")+extent("markVernier")+extent("markDEKTAK")+extent("markTLM*")+extent("text_*")+extent("ResolutionBlockSet*")+extent("Vernier*")).merge
+excludeRegion = (extent("markResolution")+extent("LayerLabels*")+extent("markVernier")+extent("markDEKTAK")+extent("markTLM*")+extent("TLM.*")+extent("text_*")+extent("ResolutionBlockSet*")+extent("Vernier*")).merge
 
 # Assemble fill area by removing excluded regions and perform fill
 log("assembling fill area")
@@ -128,18 +128,18 @@ dieMax = input(L_DieReserved)
 [L_MetalTop, L_ProtectRidge, L_ProtectRegrowth].each { |l| (dieMax - input(l)).output(l+100) }
 
 
-## Full-isolation etch experimental layer
+## Full-isolation etch replacing IsoEtch layer
 log("adding full-isolation etch")
 # Exclude known process testing marks
-excludeRegion = (extent("markResolution")+extent("LayerLabels*")+extent("markVernier")+extent("markDEKTAK")+extent("markTLM*")+extent("ResolutionBlockSet*")+extent("Vernier*"))
+excludeRegion = (extent("markResolution")+extent("LayerLabels*")+extent("markVernier")+extent("markDEKTAK")+extent("markTLM*")+extent("TLM.*")+extent("ResolutionBlockSet*")+extent("Vernier*"))
 excludeRegion = excludeRegion.size(5.um).merge
 
 # Assemble isolation area by removing extended via regions
 isoArea = input(L_DieReserved) - excludeRegion
 isoArea -= (input(L_MetalVia) - excludeRegion).sized(10.um, acute_limit)
-isoArea -= (input(L_EtchRib) - excludeRegion).sized(5.um, octagon_limit)
+isoArea -= (input(L_EtchRib) - excludeRegion).sized(10.um, acute_limit)
 isoArea += input(L_EtchIso)
-isoArea.merge.output(L_EtchIso, 1)
+isoArea.merge.output(L_EtchIso, 0)
 excludeRegion.forget
 
 

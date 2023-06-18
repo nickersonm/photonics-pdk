@@ -445,6 +445,9 @@ def segmentSDT(wTR0=None, wTR1=6.5, wShallow=3, wDeep=2,
                                   remove_layer('ProtectRidge').put(0, drc=False)
         icShallow.strt(width=wDeep, length=lTR1+lTR2-lTRs, arrow=False).\
             remove_layer('ProtectRidge').put(drc=False)
+        
+        # Isolation section to form an angled EtchIso border
+        trPassive2Iso(length=10, xs1=xs2).put(drc=False)
     
     return segment.flatten(name=name, instantiate=instantiate)
 
