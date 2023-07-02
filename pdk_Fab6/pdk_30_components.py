@@ -90,9 +90,9 @@ metalP.pinstyle = 'metal'
 # Verniers
 with nazca.Cell(name='markVernier') as markVernier:
     """Vernier array for all relevant layers"""
-    cellArray([marks.utility.Vernier(xs_center='AlignmentMark', xs_surround='ProtectRegrowth'),
+    cellArray([marks.utility.Vernier(xs_center=['AlignmentMark', 'AlignmentMetal'], xs_surround='ProtectRegrowth'),
                marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='EtchRib'),
-               marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='AlignmentMark'),
+               marks.utility.Vernier(xs_center='ProtectRidge', xs_surround=['AlignmentMark', 'AlignmentMetal']),
                marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='MetalVia'),
                marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='MetalTop')],
               space=20, nx=10).\
@@ -145,7 +145,7 @@ with nazca.Cell(name='dieCorner') as markCorner:
     marks.utility.layerPolygon(
         poly=[(0, 0), (100, 0), (100, 10),
               (10, 10), (10, 100), (0, 100)], 
-        layers=['ProtectRegrowth', 'ProtectRidge', 'AlignmentMark']).put(0, 0)
+        layers=['ProtectRegrowth', 'ProtectRidge', 'AlignmentMark', 'AlignmentMetal']).put(0, 0)
 
 
 

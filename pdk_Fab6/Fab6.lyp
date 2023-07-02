@@ -55,14 +55,6 @@
   <fill-color>#bd5353</fill-color>
   <frame-color>#bd5353</frame-color>
   <width>2</width>
- </properties>
- <properties>
-  <name>3/1 EtchIso (alt)</name>
-  <source>3/1@1</source>
-  <dither-pattern>I9</dither-pattern>
-  <fill-color>#bd5353</fill-color>
-  <frame-color>#bd5353</frame-color>
-  <width>2</width>
   <visible>false</visible>
  </properties>
  <!-- <properties>
@@ -122,6 +114,13 @@
   <source>14/0@1</source>
   <fill-color>#AA336A</fill-color>
   <frame-color>#AA336A</frame-color>
+ </properties>
+ <properties>
+  <name>16/0 Alignment</name>
+  <source>16/0@1</source>
+  <fill-color>#88336A</fill-color>
+  <frame-color>#88336A</frame-color>
+  <dither-pattern>I15</dither-pattern>
  </properties>
  <properties>
   <name>1001/0 Die Area</name>

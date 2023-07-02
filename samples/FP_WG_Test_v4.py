@@ -10,7 +10,8 @@
 """
 FP waveguide test for phase modulation coefficient extraction
 (c) Michael Nickerson 2023
-    v3: remove isolation etches, add SSC to all but SSC=0 test, constant SDT shallow length, added Ubend
+    v3: Remove isolation etches, add SSC to all but SSC=0 test, constant SDT shallow length, added Ubend
+    v4: Add alignment mark layer
 """
 
 ## Includes and aliases
@@ -28,7 +29,7 @@ cellHeight = marks.fCommon.cellHeight
 nazca.font.default_font('nazca')
 
 # Mask-specific definitions
-dieName = 'FP_WG_Test_v3'
+dieName = 'FP_WG_Test_v4'
 dieSize = [[0,0], [None, 2.50e3]]   # Simple FP waveguide tests
 dieSize[1][0] = dieSize[1][1]*2 - 200   # Adjust for test markings
 modLen = 1000   # Typical modulator length
@@ -138,20 +139,28 @@ def die(dieName=dieName):
         marks.utility.die(dieSize).put(0,0)
         marks.utility.die(dieSize, layer=1005, grow=100).put(0,0)
         
+        # Die border for alignment layer
+        marks.utility.layerPolygon(poly=nazca.geometries.frame(sizew=2, 
+                                                               sizel=dieSize[1][0] + 20, 
+                                                               sizeh=dieSize[1][1] + 20),
+                                   layers=['AlignmentMark', 'AlignmentMetal']).put(-10,-10)
+        
         # Corner marks
         marks.fCommon.putCorners(PDK.markCorner.remove_layer(['ProtectRidge']), diesize=dieSize, inset=[0,0], flip=True, flop=True)
         
         # MLA150 alignment marks in explicit locations
         for x in [dieSize[0][0]+150, dieSize[1][1]-150]:
             for y in [dieSize[1][1]-150]:
-                marks.mla150.AlignHighMag(layer=['ProtectRegrowth', 'ProtectRidge']).put(x,y)
+                marks.mla150.AlignHighMag(layer=['ProtectRegrowth', 'ProtectRidge', 'AlignmentMark', 'AlignmentMetal'],
+                                          background=10014).put(x,y)
                 nazca.netlist.Annotation(layer='Annotation', 
                                         text=( 'Align: %.0f, %.0f' % (x,y) )).put(x,y)
         
         # Stepper2 DFAS marks in explicit locations
         for x in [dieSize[0][0]+350, dieSize[1][1]-350]:
             for y in [dieSize[1][1]-150]:
-                marks.stepper2.LocalAlign(layer=['ProtectRidge']).put(x,y)
+                marks.stepper2.LocalAlign(layer=['ProtectRidge', 'AlignmentMark', 'AlignmentMetal'],
+                                          background=10014).put(x,y)
                 nazca.netlist.Annotation(layer='Annotation', 
                                         text=( 'Align: %.0f, %.0f' % (x,y) )).put(x,y)
         
@@ -166,7 +175,7 @@ def die(dieName=dieName):
                     marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='EtchIso'),
                     marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='MetalVia'),
                     marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='MetalTop'),
-                    marks.utility.Vernier(xs_center='ProtectRidge', xs_surround='CleaveLane'),
+                    marks.utility.Vernier(xs_center='ProtectRidge', xs_surround=['AlignmentMark', 'AlignmentMetal']),
                     marks.utility.LayerLabels(layers=[1,2,4, 5])],
                     space=20, nx=12).put(dieSize[1][1]/2, dieSize[1][1]-150)
         

@@ -46,6 +46,8 @@ nazca.add_layer(name='MetalKeepaway', layer=13, accuracy=1e-2, \
 
 nazca.add_layer(name='AlignmentMark', layer=14, accuracy=1e-2, \
     remark='Alignment marks only')
+nazca.add_layer(name='AlignmentMetal', layer=16, accuracy=1e-2, \
+    remark='Alignment marks only')
 
 # Informational layers
 nazca.add_layer(name='DieArea', layer=1001, accuracy=1e-2, \

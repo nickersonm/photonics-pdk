@@ -12,6 +12,7 @@ Fab6 laser, SOA, and MZM test structures for "AR8.2" GaAs epitaxy
 (c) Michael Nickerson 2023
     v2: Simplified test structures and reduced to optimal laser types
     v3: Added ring laser
+    v4: Added alignment mark layer
 """
 
 ## Includes and aliases
@@ -31,7 +32,7 @@ cellHeight = marks.fCommon.cellHeight
 nazca.font.default_font('nazca')
 
 # Mask-specific definitions
-dieName = 'Active_Test_v3'
+dieName = 'Active_Test_v4'
 dieSize = [[0,0], [3e3, 2.7e3]]
 wgSpace = PDK.contactWidth + PDK.metalBuffer # Waveguide spacing
 wgOverlap = PDK.cleaveWidth*1.5  # Overlap between subdies, 1/2 space between cleaving lines, and general inset
@@ -40,7 +41,7 @@ componentSpace = 100    # Typical longitudinal distance between components
 angleOut = 6    # Output facet angle to avoid backreflections
 
 # Derived definitions
-dieLabel = lambda dieName: marks.utility.label(text=dieName+'\n', height=50, layer='MetalTop', date=True, origin=['top', 'left'])
+dieLabel = lambda dieName: marks.utility.label(text=dieName+'\n', height=50, layer=['MetalTop', 'AlignmentMark', 'AlignmentMetal'], date=True, origin=['top', 'left'])
 
 
 
@@ -272,16 +273,24 @@ def die(dieName=dieName):
         marks.utility.die(dieSize).put(0,0)
         marks.utility.die(dieSize, layer=1005, grow=100).put(0,0)
         
+        # Die border for alignment layer
+        marks.utility.layerPolygon(poly=nazca.geometries.frame(sizew=2, 
+                                                               sizel=dieSize[1][0] + 30, 
+                                                               sizeh=dieSize[1][1] + 30),
+                                   layers=['AlignmentMark', 'AlignmentMetal']).put(-15,-15)
+        
         # MLA150 alignment marks in explicit asymmetric locations
         for x, y in [[200, 75], [dieSize[1][0]-125, 75],
                     [100, dieSize[1][1]-85], [dieSize[1][0]-110, dieSize[1][1]-70]]:
-            marks.mla150.AlignHighMag(layer=['ProtectRegrowth', 'ProtectRidge']).put(x,y)
+            marks.mla150.AlignHighMag(layer=['ProtectRegrowth', 'ProtectRidge', 'AlignmentMark', 'AlignmentMetal'],
+                                      background=10014).put(x,y)
             nazca.netlist.Annotation(layer='Annotation', 
                                         text=( "Align: %.0f, %.0f" % (x,y) )).put(x,y)
         
         # Stepper2 DFAS marks in explicit asymmetric locations
         for x, y in [[1800, 50], [1950, dieSize[1][1]-50]]:
-            marks.stepper2.LocalAlign(layer=['ProtectRidge']).put(x,y)
+            marks.stepper2.LocalAlign(layer=['ProtectRidge', 'AlignmentMark', 'AlignmentMetal'],
+                                      background=10014).put(x,y)
             nazca.netlist.Annotation(layer='Annotation', 
                                         text=( "Align: %.0f, %.0f" % (x,y) )).put(x,y)
         
