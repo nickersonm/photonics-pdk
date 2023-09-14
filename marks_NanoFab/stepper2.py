@@ -74,7 +74,7 @@ def LocalAlign(layer=1, background=None, grow_background=10):
         return nazca.cfg.cellnames[markName]
     
     S2_LocalAlign = nazca.cfg.cellnames['S2.LocalAlign'] if 'S2.LocalAlign' in nazca.cfg.cellnames.keys() else \
-                    nazca.load_gds(filename=pathGDS+'LocalAlign.gds', instantiate=False, 
+                    nazca.load_gds(filename=pathGDS+'LocalAlign_solid.gds', instantiate=False, 
                                    cellname='LocalAlign', newcellname='S2.LocalAlign', scale=1)
     
     with nazca.Cell(name=markName) as mark:
