@@ -90,6 +90,14 @@ def flatten(l):
 
 
 ## Various simple calculations
+# Pin separation
+def dx(cell):
+    """x-separation between input and output pins."""
+    return round(abs(cell.pinout.x - cell.pinin.x), 3)
+def dy(cell):
+    """y-separation between input and output pins."""
+    return round(abs(cell.pinout.y - cell.pinin.y), 3)
+
 # Add offset to a polygon tuple
 def addPolyOffset(poly, offset):
     """Add offset to all points in a polygon."""
