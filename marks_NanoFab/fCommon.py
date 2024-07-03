@@ -167,6 +167,7 @@ def cellFlipPins(cell, instantiate=None):
         ia, ib = pinsin.index('a0'), pinsin.index('b0')
         pinsout[ia], pinsout[ib] = 'b0', 'a0'
         cell.put(0).raise_pins(namesin=pinsin, namesout=pinsout)
+        C.length_geo = cell.length_geo if hasattr(cell, 'length_geo') else (dx(cell)**2 + dy(cell)**2)**0.5
     return C
 
 # Place cells in corners
