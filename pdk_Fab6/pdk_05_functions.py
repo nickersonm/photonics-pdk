@@ -54,7 +54,7 @@ def parsePin(pin, default='out', rot=False):
 # Get the geometric length between two pins with `nazca.cell.geolen`
 def pinGeoDiff(p1, p2):
     """Get the geometric length between two pins with `nazca.cell.geolen`."""
-    return (nazca.diff(p1, p2)[0]**2 +nazca.diff(p1, p2)[1])**0.5
+    return (nazca.diff(p1, p2)[0]**2 +nazca.diff(p1, p2)[1]**2)**0.5
 nazca.Cell.geolen = lambda self : pinGeoDiff(self.pinin, self.pinout)
 
 # Simple debugging function to plot polygons

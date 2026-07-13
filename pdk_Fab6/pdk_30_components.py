@@ -496,7 +496,7 @@ def segmentVCDBR(order=9, w=None, bias=0.48,
     nB = 3.4157 if nB is None else nB
     
     # Name and deduplicate
-    name = 'SegmentLCDBR.'+str([order, w, nA, nB, l0])
+    name = 'SegmentVCDBR.'+str([order, w, nA, nB, l0])
     if name in nazca.cfg.cellnames.keys() and instantiate == True:
         return nazca.cfg.cellnames[name]
     
