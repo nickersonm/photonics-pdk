@@ -94,7 +94,7 @@ def cell_get_polygons(self, layers):
     Also callable as `nazca.cell.get_polygons`.
     
     Args:
-        layers (list of str): names of layers to retreive polygons from
+        layers (list of str): names of layers to retrieve polygons from
     
     Returns:
         List: list of polygon points

@@ -219,7 +219,7 @@ def cellPolygons(cell, layers):
     
     Args:
         cell (Cell): cell to get polygons from
-        layers (int or str): names of layers to retreive polygons from
+        layers (int or str): names of layers to retrieve polygons from
     
     Returns:
         List: list of polygon points
